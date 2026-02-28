@@ -1,0 +1,322 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.chinese-char {
+  @include game-container;
+  background: linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 30%, #FFECB3 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-md;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #BF360C;
+  }
+
+  &__level-badge {
+    @include level-badge;
+  }
+
+  &__subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: $shadow-sm;
+  }
+
+  // === Menu ===
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    width: 100%;
+    max-width: 360px;
+    padding: 0 16px;
+  }
+
+  &__menu-btn {
+    @include btn-base;
+    @include flex-column-center;
+    padding: 24px 20px;
+    border-radius: $radius-md;
+    background: white;
+    box-shadow: $shadow-md;
+    transition: all $transition-normal;
+    border: 3px solid transparent;
+
+    &:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: $shadow-lg;
+      border-color: $color-orange;
+    }
+  }
+
+  &__menu-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  &__menu-desc {
+    color: $text-light;
+    font-size: 0.95rem;
+  }
+
+  // === Learn mode ===
+  &__card-display {
+    @include flex-center;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  &__big-card {
+    @include card($spacing-2xl);
+    @include flex-column-center;
+    border-radius: $radius-xl;
+    max-width: 350px;
+    width: 100%;
+    background: white;
+    border: 4px solid $color-orange;
+    animation: popIn 0.5s ease;
+    gap: $spacing-sm;
+  }
+
+  &__big-char {
+    font-size: 7rem;
+    font-weight: 900;
+    color: #BF360C;
+    line-height: 1;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
+
+    @include mobile {
+      font-size: 5rem;
+    }
+  }
+
+  &__big-emoji {
+    font-size: 3rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  &__big-meaning {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: $text-dark;
+  }
+
+  &__big-hint {
+    font-size: 1rem;
+    color: $text-light;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 8px 16px;
+    border-radius: 12px;
+  }
+
+  &__speak-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: 8px;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 14px rgba(255, 152, 0, 0.5);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  // === Nav buttons ===
+  &__nav {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 16px;
+  }
+
+  &__nav-btn {
+    @include btn-base;
+    padding: 12px 20px;
+    border-radius: $radius-lg;
+    background: white;
+    box-shadow: $shadow-sm;
+    font-weight: 700;
+    transition: all $transition-normal;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+    }
+
+    &--back {
+      background: $color-orange;
+      color: white;
+    }
+  }
+
+  // === Match / Reverse modes ===
+  &__match-game {
+    @include flex-column-center;
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 420px;
+    padding: 0 16px;
+  }
+
+  &__match-prompt {
+    @include flex-column-center;
+    gap: $spacing-sm;
+    background: white;
+    padding: $spacing-xl;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+    width: 100%;
+    animation: popIn 0.5s ease;
+  }
+
+  &__match-emoji {
+    font-size: 4rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  &__match-meaning {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: $text-dark;
+  }
+
+  &__match-hint {
+    font-size: 1rem;
+    color: $text-light;
+  }
+
+  &__reverse-char {
+    font-size: 5rem;
+    font-weight: 900;
+    color: #BF360C;
+    line-height: 1;
+  }
+
+  &__match-choices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    width: 100%;
+  }
+
+  &__match-btn {
+    @include btn-base;
+    padding: 20px;
+    font-size: 2.8rem;
+    font-weight: 900;
+    border-radius: $radius-lg;
+    background: white;
+    box-shadow: $shadow-md;
+    transition: all $transition-bounce;
+    border: 3px solid transparent;
+
+    &:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: $shadow-lg;
+      border-color: $color-orange;
+    }
+
+    &.correct {
+      background: $color-green;
+      color: white;
+      animation: correctPop 0.5s ease;
+    }
+
+    &.wrong {
+      background: $color-primary;
+      color: white;
+      animation: shake 0.5s ease;
+    }
+
+    &.show-correct {
+      border-color: $color-green;
+      box-shadow: 0 0 15px rgba($color-green, 0.4);
+    }
+  }
+
+  &__reverse-btn {
+    @include btn-base;
+    @include flex-column-center;
+    padding: 16px;
+    border-radius: $radius-lg;
+    background: white;
+    box-shadow: $shadow-md;
+    transition: all $transition-bounce;
+    border: 3px solid transparent;
+    gap: 4px;
+
+    &:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: $shadow-lg;
+      border-color: $color-orange;
+    }
+
+    &.correct {
+      background: $color-green;
+      color: white;
+      animation: correctPop 0.5s ease;
+    }
+
+    &.wrong {
+      background: $color-primary;
+      color: white;
+      animation: shake 0.5s ease;
+    }
+
+    &.show-correct {
+      border-color: $color-green;
+      box-shadow: 0 0 15px rgba($color-green, 0.4);
+    }
+  }
+
+  &__reverse-emoji {
+    font-size: 2.5rem;
+  }
+
+  &__reverse-meaning {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: inherit;
+  }
+}

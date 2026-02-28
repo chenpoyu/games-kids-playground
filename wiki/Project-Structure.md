@@ -7,27 +7,37 @@ games-kids-playground/
 │       └── deploy.yml           # GitHub Actions CI/CD
 ├── public/                      # 靜態資源
 ├── src/
-│   ├── App.jsx                  # 路由配置
+│   ├── App.jsx                  # 路由配置 + ProfileProvider
 │   ├── main.jsx                 # 應用程式入口
 │   ├── assets/                  # 靜態素材
+│   ├── contexts/
+│   │   └── ProfileContext.jsx   # 多學員狀態、難度定義、解鎖邏輯
 │   ├── components/              # 共用元件
 │   │   ├── BackButton/          # 返回首頁按鈕
+│   │   ├── LevelSelect/         # 五級難度選擇介面
+│   │   ├── ProfileBar/          # 頂部學員資訊列
+│   │   ├── ProfileSelect/       # 學員選擇 / 新增畫面
 │   │   ├── StarScore/           # 星星評分顯示
 │   │   └── WinModal/            # 勝利過關彈窗
 │   ├── games/                   # 遊戲模組（每個遊戲一個資料夾）
-│   │   ├── ABCLearn/            # ABC 英文字母
-│   │   ├── AnimalPuzzle/        # 動物翻翻樂
-│   │   ├── BalloonPop/          # 數字氣球
-│   │   ├── ColorMatch/          # 顏色配對
-│   │   ├── NumberLearn/         # 數字學習
-│   │   └── ShapeSort/           # 形狀排排看
+│   │   ├── ABCLearn/            # 🔤 ABC 英文字母
+│   │   ├── AnimalPuzzle/        # 🦁 動物翻翻樂
+│   │   ├── BalloonPop/          # 🎈 數字氣球
+│   │   ├── ChineseChar/         # 漢 簡易中文字
+│   │   ├── ColorMatch/          # 🎨 顏色配對
+│   │   ├── MathBasic/           # ➕ 簡易加減法
+│   │   ├── NumberLearn/         # 🔢 數字學習
+│   │   ├── ShapeSort/           # 🔷 形狀排排看
+│   │   └── ZhuyinLearn/         # ㄅ 注音符號
 │   ├── hooks/                   # 自訂 React Hooks
-│   │   ├── useProgress.js       # 積分 / 成就 / 學習履歷
-│   │   └── useSound.js          # Web Audio API 音效
+│   │   ├── useSound.js          # Web Audio API 音效合成
+│   │   ├── useSpeak.js          # Web Speech API 語音朗讀
+│   │   └── useProgress.js       # (舊版) 積分 / 成就系統
 │   ├── pages/                   # 頁面
 │   │   ├── About/               # 關於本站
 │   │   ├── History/             # 學習履歷
-│   │   └── Home/                # 首頁遊戲列表
+│   │   ├── Home/                # 首頁遊戲列表
+│   │   └── LearningMap/         # 學習路徑地圖
 │   ├── styles/                  # 全域 SCSS
 │   │   ├── _animations.scss     # 動畫 keyframes
 │   │   ├── _mixins.scss         # RWD / 共用 mixins
@@ -46,12 +56,14 @@ games-kids-playground/
 └── package.json
 ```
 
+> 📌 `coverage/` 目錄由 `npm run test:coverage` 自動產生，已加入 `.gitignore` 不納入版本控制。
+
 ## 命名慣例
 
 | 類型 | 慣例 | 範例 |
 |------|------|------|
 | 元件 | PascalCase 資料夾 + 同名 `.jsx` + `.scss` | `BackButton/BackButton.jsx` |
-| Hook | camelCase `use` 前綴 | `useProgress.js` |
+| Hook | camelCase `use` 前綴 | `useSpeak.js` |
 | 樣式 | BEM 命名 | `.balloon-pop__header` |
 | 測試 | 同名 `.test.jsx` / `.test.js` | `BalloonPop.test.jsx` |
 
@@ -60,11 +72,17 @@ games-kids-playground/
 | 路徑 | 元件 | 說明 |
 |------|------|------|
 | `/` | `Home` | 首頁遊戲選單 |
+| `/learning-map` | `LearningMap` | 學習路徑地圖 |
 | `/color-match` | `ColorMatch` | 顏色配對 |
 | `/animal-puzzle` | `AnimalPuzzle` | 動物翻翻樂 |
 | `/balloon-pop` | `BalloonPop` | 數字氣球 |
 | `/shape-sort` | `ShapeSort` | 形狀排排看 |
 | `/number-learn` | `NumberLearn` | 數字學習 |
 | `/abc-learn` | `ABCLearn` | ABC 英文字母 |
+| `/zhuyin-learn` | `ZhuyinLearn` | 注音符號 |
+| `/math-basic` | `MathBasic` | 簡易加減法 |
+| `/chinese-char` | `ChineseChar` | 簡易中文字 |
 | `/history` | `History` | 學習履歷 |
 | `/about` | `About` | 關於本站 |
+
+> 所有路由皆被 `ProfileProvider` 包覆，需先選擇/建立學員才能進入遊戲。

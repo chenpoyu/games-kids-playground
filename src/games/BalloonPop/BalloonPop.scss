@@ -21,6 +21,10 @@
     color: #7C3AED;
   }
 
+  &__level-badge {
+    @include level-badge;
+  }
+
   &__subtitle {
     color: $text-light;
     font-size: 1.1rem;

@@ -125,6 +125,83 @@
     }
   }
 
+  &__age-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 16px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  // === 推薦區 ===
+  &__recommendation {
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    padding: 0 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s ease 0.4s;
+
+    &.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  &__rec-label {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba($text-dark, 0.6);
+    margin-bottom: 8px;
+  }
+
+  &__rec-card {
+    @include btn-base;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-radius: $radius-lg;
+    color: white;
+    box-shadow: $shadow-card;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-lg;
+    }
+  }
+
+  &__rec-emoji {
+    font-size: 2rem;
+  }
+
+  &__rec-info {
+    flex: 1;
+    text-align: left;
+  }
+
+  &__rec-title {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  &__rec-level {
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+
+  &__rec-arrow {
+    font-size: 1.3rem;
+    opacity: 0.7;
+  }
+
   // === 進度總覽 ===
   &__progress {
     position: relative;
@@ -380,6 +457,41 @@
     font-size: 0.7rem;
     font-weight: 700;
     color: white;
+  }
+
+  &__stars-display {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  &__lock {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.3rem;
+    z-index: 3;
+  }
+
+  &__unlock-text {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-top: 4px;
+  }
+
+  &--locked {
+    filter: grayscale(0.5);
+    opacity: 0.7;
+    cursor: not-allowed !important;
+
+    &:hover {
+      transform: none !important;
+      box-shadow: $shadow-card !important;
+    }
+
+    &:active {
+      transform: none !important;
+    }
   }
 
   &__shine {

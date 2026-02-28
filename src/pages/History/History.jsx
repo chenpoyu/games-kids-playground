@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useSound } from '../../hooks/useSound'
-import { useProgress, ACHIEVEMENTS } from '../../hooks/useProgress'
+import { useProfile, ACHIEVEMENTS } from '../../contexts/ProfileContext'
 import BackButton from '../../components/BackButton/BackButton'
+import ProfileBar from '../../components/ProfileBar/ProfileBar'
 import './History.scss'
 
 function formatDate(dateStr) {
@@ -20,10 +21,19 @@ function getStarsDisplay(stars) {
 export default function History() {
   const navigate = useNavigate()
   const { playClick } = useSound()
-  const { progress, resetProgress } = useProgress()
+  const { activeProfile, resetProgress } = useProfile()
+
+  const progress = activeProfile
+    ? {
+        totalStars: activeProfile.totalStars || 0,
+        gamesPlayed: activeProfile.gamesPlayed || 0,
+        achievements: activeProfile.achievements || [],
+        history: activeProfile.history || [],
+      }
+    : { totalStars: 0, gamesPlayed: 0, achievements: [], history: [] }
 
   const handleReset = () => {
-    if (window.confirm('確定要清除所有紀錄嗎？這個動作無法復原！')) {
+    if (window.confirm(`確定要清除 ${activeProfile?.name || ''} 的所有紀錄嗎？`)) {
       playClick()
       resetProgress()
     }
@@ -32,9 +42,10 @@ export default function History() {
   return (
     <div className="history">
       <BackButton />
+      <ProfileBar />
 
       <div className="history__header">
-        <h1 className="history__title">📚 學習履歷</h1>
+        <h1 className="history__title">📚 {activeProfile?.name || ''} 的學習履歷</h1>
         <p className="history__subtitle">看看你的學習成果吧！</p>
       </div>
 

@@ -1,0 +1,167 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.math-basic {
+  @include game-container;
+  background: linear-gradient(180deg, #E8EAF6 0%, #C5CAE9 30%, #E3F2FD 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-md;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #283593;
+  }
+
+  &__level-badge {
+    @include level-badge;
+  }
+
+  &__description {
+    color: $text-light;
+    font-size: 1rem;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: $shadow-sm;
+  }
+
+  // === Game area ===
+  &__game {
+    @include flex-column-center;
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 16px;
+  }
+
+  // === Visual aid ===
+  &__visual {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    background: white;
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__visual-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    max-width: 160px;
+  }
+
+  &__visual-item {
+    font-size: 1.5rem;
+    animation: popIn 0.3s ease backwards;
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.05}s;
+      }
+    }
+
+    &.subtract {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+  }
+
+  &__visual-op {
+    font-size: 2rem;
+    font-weight: 900;
+    color: $color-blue;
+  }
+
+  // === Question ===
+  &__question {
+    @include flex-center;
+    background: white;
+    padding: $spacing-xl $spacing-2xl;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-md;
+    animation: popIn 0.5s ease;
+  }
+
+  &__question-text {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #283593;
+    letter-spacing: 4px;
+
+    @include mobile {
+      font-size: 2rem;
+    }
+  }
+
+  // === Choices ===
+  &__choices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  &__choice {
+    @include btn-base;
+    @include flex-center;
+    padding: 20px;
+    font-size: 2rem;
+    font-weight: 900;
+    border-radius: $radius-lg;
+    background: white;
+    box-shadow: $shadow-md;
+    transition: all $transition-bounce;
+    border: 3px solid transparent;
+    color: $text-dark;
+
+    &:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: $shadow-lg;
+      border-color: $color-blue;
+    }
+
+    &.correct {
+      background: $color-green;
+      color: white;
+      border-color: $color-green;
+      animation: correctPop 0.5s ease;
+    }
+
+    &.wrong {
+      background: $color-primary;
+      color: white;
+      border-color: $color-primary;
+      animation: shake 0.5s ease;
+    }
+
+    &.show-correct {
+      border-color: $color-green;
+      box-shadow: 0 0 15px rgba($color-green, 0.4);
+    }
+  }
+}

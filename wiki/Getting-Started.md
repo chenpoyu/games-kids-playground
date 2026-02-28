@@ -31,7 +31,7 @@ npm run dev
 | `npm run lint` | ESLint 程式碼檢查 |
 | `npm test` | Vitest 監聽模式 |
 | `npm run test:run` | 執行所有測試（一次性） |
-| `npm run test:coverage` | 執行測試並產生覆蓋率報告 |
+| `npm run test:coverage` | 執行測試並產生覆蓋率報告至 `coverage/`（不納入 git） |
 
 ## 線上版本
 
@@ -39,4 +39,4 @@ npm run dev
 
 👉 [https://chenpoyu.github.io/games-kids-playground/](https://chenpoyu.github.io/games-kids-playground/)
 
-支援手機、平板、桌機瀏覽器。
+支援手機、平板、桌機瀏覽器（語音朗讀功能建議使用 Chrome / Edge）。

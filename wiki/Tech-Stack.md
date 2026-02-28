@@ -23,13 +23,15 @@
 |------|------|
 | [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | 過關撒花慶祝動畫 |
 | Web Audio API | 原生音效合成（無外部音檔） |
+| Web Speech API | 語音朗讀題目與說明 |
 | CSS Animations | 翻牌、搖晃、浮動等互動動畫 |
 
-## 資料儲存
+## 狀態管理
 
 | 技術 | 說明 |
 |------|------|
-| localStorage | 儲存學習進度與成就（`kids-playground-progress`） |
+| React Context (`ProfileContext`) | 全域多學員狀態管理、難度定義、遊戲解鎖邏輯 |
+| localStorage | 儲存學習進度與成就（`kids-playground-profiles`、`kids-playground-active-profile`） |
 
 ## 測試
 
@@ -39,6 +41,8 @@
 | [React Testing Library](https://testing-library.com/react) | React 元件測試 |
 | [@testing-library/jest-dom](https://github.com/testing-library/jest-dom) | DOM 斷言擴充 |
 | [@vitest/coverage-v8](https://vitest.dev/guide/coverage) | 程式碼覆蓋率（V8 provider） |
+
+> 📌 覆蓋率報告輸出至 `coverage/`，已加入 `.gitignore` 不納入版本控制。
 
 ## CI/CD
 
@@ -61,6 +65,12 @@
 
 ### 為什麼音效不用音檔？
 Web Audio API 直接合成音效，免除音檔載入時間、減少專案體積、避免授權問題。
+
+### 為什麼加入 Web Speech API？
+目標用戶為 2~6 歲幼兒，語音朗讀能幫助尚未識字的小朋友理解題目與說明，降低學習門檻。
+
+### 為什麼用 React Context 取代 useProgress？
+新版多學員系統需要跨元件共享學員資料、關卡進度與解鎖狀態，Context 比單純 Hook 更適合全域狀態管理。
 
 ### 為什麼用 localStorage 而非資料庫？
 這是面向幼兒的前端應用，不需要帳號系統。localStorage 簡單、不蒐集個資、離線可用。

@@ -19,6 +19,8 @@ npm run test:run
 npm run test:coverage
 ```
 
+> 📌 覆蓋率報告輸出至 `coverage/` 目錄，已加入 `.gitignore` 不納入版本控制。
+
 ## 測試結構
 
 ```
@@ -78,6 +80,58 @@ src/test/
 ### 常見 Mock 模式
 
 每個遊戲測試都會 mock 以下 hooks：
+
+```javascript
+// Mock useNavigate
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return { ...actual, useNavigate: () => mockNavigate }
+})
+
+// Mock useSound
+vi.mock('../../hooks/useSound', () => ({
+  useSound: () => ({
+    playCorrect: vi.fn(),
+    playWrong: vi.fn(),
+    playClick: vi.fn(),
+    playWin: vi.fn(),
+    playPop: vi.fn(),
+  }),
+}))
+
+// Mock useSpeak
+vi.mock('../../hooks/useSpeak', () => ({
+  useSpeak: () => ({
+    speak: vi.fn(),
+    speakZh: vi.fn(),
+    speakEn: vi.fn(),
+    speakDelayed: vi.fn(),
+    stopSpeak: vi.fn(),
+  }),
+}))
+
+// Mock ProfileContext
+vi.mock('../../contexts/ProfileContext', async () => {
+  const actual = await vi.importActual('../../contexts/ProfileContext')
+  return {
+    ...actual,
+    useProfile: () => ({
+      activeProfile: { levelProgress: {}, unlockedGames: [] },
+      recordGame: vi.fn(),
+    }),
+  }
+})
+```
+
+## 撰寫新測試的建議
+
+1. **測試檔案命名**：與原始檔案同名，加 `.test` 後綴
+2. **放置位置**：`src/test/` 下對應子目錄
+3. **使用 MemoryRouter**：測試 React Router 相關元件時需包裹
+4. **Fake Timers**：含 `setTimeout` 的互動邏輯需使用 `vi.useFakeTimers()` + `vi.advanceTimersByTime()`，測試結束記得 `vi.useRealTimers()`
+5. **DOM 查詢**：優先使用 `screen.getByText` / `screen.getByRole`，必要時才用 `document.querySelectorAll`
+6. **新遊戲測試**：需額外 mock `useSpeak` 與 `ProfileContext`（相較舊遊戲增加的依賴）
 
 ```javascript
 // Mock useNavigate

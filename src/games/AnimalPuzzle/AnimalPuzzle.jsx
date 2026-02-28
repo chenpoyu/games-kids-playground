@@ -1,24 +1,26 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSound } from '../../hooks/useSound'
-import { useProgress } from '../../hooks/useProgress'
+import { useSpeak } from '../../hooks/useSpeak'
+import { useProfile, DIFFICULTY_LEVELS, getNextLevel } from '../../contexts/ProfileContext'
 import BackButton from '../../components/BackButton/BackButton'
 import WinModal from '../../components/WinModal/WinModal'
+import LevelSelect from '../../components/LevelSelect/LevelSelect'
 import './AnimalPuzzle.scss'
 
 const ALL_ANIMALS = [
-  { id: 'cat', emoji: '🐱', name: '小貓' },
-  { id: 'dog', emoji: '🐶', name: '小狗' },
-  { id: 'rabbit', emoji: '🐰', name: '兔子' },
-  { id: 'bear', emoji: '🐻', name: '小熊' },
-  { id: 'lion', emoji: '🦁', name: '獅子' },
-  { id: 'elephant', emoji: '🐘', name: '大象' },
-  { id: 'panda', emoji: '🐼', name: '熊貓' },
-  { id: 'monkey', emoji: '🐵', name: '猴子' },
-  { id: 'pig', emoji: '🐷', name: '小豬' },
-  { id: 'frog', emoji: '🐸', name: '青蛙' },
-  { id: 'duck', emoji: '🦆', name: '鴨子' },
-  { id: 'penguin', emoji: '🐧', name: '企鵝' },
+  { id: 'cat', emoji: '🐱', name: '小貓', english: 'Cat' },
+  { id: 'dog', emoji: '🐶', name: '小狗', english: 'Dog' },
+  { id: 'rabbit', emoji: '🐰', name: '兔子', english: 'Rabbit' },
+  { id: 'bear', emoji: '🐻', name: '小熊', english: 'Bear' },
+  { id: 'lion', emoji: '🦁', name: '獅子', english: 'Lion' },
+  { id: 'elephant', emoji: '🐘', name: '大象', english: 'Elephant' },
+  { id: 'panda', emoji: '🐼', name: '熊貓', english: 'Panda' },
+  { id: 'monkey', emoji: '🐵', name: '猴子', english: 'Monkey' },
+  { id: 'pig', emoji: '🐷', name: '小豬', english: 'Pig' },
+  { id: 'frog', emoji: '🐸', name: '青蛙', english: 'Frog' },
+  { id: 'duck', emoji: '🦆', name: '鴨子', english: 'Duck' },
+  { id: 'penguin', emoji: '🐧', name: '企鹝', english: 'Penguin' },
 ]
 
 function shuffleArray(arr) {
@@ -40,11 +42,21 @@ function generateCards(pairCount = 6) {
   return shuffleArray(pairs)
 }
 
+const LEVEL_CONFIG = {
+  beginner: { pairCount: 3, label: '初級' },
+  intermediate: { pairCount: 4, label: '中級' },
+  advanced: { pairCount: 6, label: '高級' },
+  expert: { pairCount: 8, label: '專家' },
+  master: { pairCount: 10, label: '大師' },
+}
+
 export default function AnimalPuzzle() {
   const navigate = useNavigate()
   const { playCorrect, playWrong, playClick, playWin } = useSound()
-  const { recordGame } = useProgress()
-  const [cards, setCards] = useState(() => generateCards(6))
+  const { speakZh, speakEn, speakDelayed } = useSpeak()
+  const { recordGame } = useProfile()
+  const [level, setLevel] = useState(null)
+  const [cards, setCards] = useState([])
   const [flipped, setFlipped] = useState([])
   const [matches, setMatches] = useState(0)
   const [attempts, setAttempts] = useState(0)
@@ -52,7 +64,28 @@ export default function AnimalPuzzle() {
   const [disabled, setDisabled] = useState(false)
   const [lastMatched, setLastMatched] = useState(null)
 
-  const totalPairs = 6
+  const config = level ? LEVEL_CONFIG[level] : null
+  const totalPairs = config?.pairCount || 6
+
+  useEffect(() => {
+    if (level) {
+      const cfg = LEVEL_CONFIG[level]
+      setCards(generateCards(cfg.pairCount))
+      setFlipped([])
+      setMatches(0)
+      setAttempts(0)
+      setShowWin(false)
+      setDisabled(false)
+      setLastMatched(null)
+    }
+  }, [level])
+
+  // 進入關卡時的語音說明
+  useEffect(() => {
+    if (level) {
+      speakDelayed('翻開卡片，找出兩隻一樣的動物配對喔！')
+    }
+  }, [level, speakDelayed])
 
   const handleCardClick = useCallback((cardId) => {
     if (disabled) return
@@ -60,6 +93,9 @@ export default function AnimalPuzzle() {
     if (!card || card.matched || flipped.includes(cardId)) return
 
     playClick()
+    // 翻牌時播報動物名稱（中文 + 英文）
+    speakZh(card.name)
+    setTimeout(() => speakEn(card.english), 800)
     const newFlipped = [...flipped, cardId]
     setFlipped(newFlipped)
 
@@ -90,33 +126,55 @@ export default function AnimalPuzzle() {
         }, 1000)
       }
     }
-  }, [cards, flipped, disabled, playClick, playCorrect, playWrong])
+  }, [cards, flipped, disabled, playClick, playCorrect, playWrong, speakZh, speakEn])
 
   useEffect(() => {
-    if (matches === totalPairs) {
+    if (level && matches === totalPairs && matches > 0) {
       setTimeout(() => {
         playWin()
-        const stars = attempts <= totalPairs + 3 ? 3 : attempts <= totalPairs + 7 ? 2 : 1
-        recordGame('animal-puzzle', '動物翻翻樂', stars, `翻了 ${attempts} 次`)
+        const stars = attempts <= totalPairs + 3 ? 3 : attempts <= totalPairs * 2 ? 2 : 1
+        recordGame('animal-puzzle', '動物翻翻樂', stars, `${config.label} · 翻了 ${attempts} 次`, level)
         setShowWin(true)
       }, 600)
     }
-  }, [matches, playWin, attempts, recordGame])
+  }, [matches, totalPairs, level])
 
   const resetGame = () => {
-    setCards(generateCards(6))
-    setFlipped([])
-    setMatches(0)
-    setAttempts(0)
-    setShowWin(false)
-    setDisabled(false)
-    setLastMatched(null)
+    if (level) {
+      setCards(generateCards(LEVEL_CONFIG[level].pairCount))
+      setFlipped([])
+      setMatches(0)
+      setAttempts(0)
+      setShowWin(false)
+      setDisabled(false)
+      setLastMatched(null)
+    }
   }
 
   const getStars = () => {
     if (attempts <= totalPairs + 3) return 3
-    if (attempts <= totalPairs + 7) return 2
+    if (attempts <= totalPairs * 2) return 2
     return 1
+  }
+
+  const nextLevelKey = getNextLevel(level)
+  const nextLevelUnlocked = nextLevelKey && getStars() >= 2
+
+  const handleNextLevel = () => {
+    setLevel(nextLevelKey)
+    setShowWin(false)
+  }
+
+  if (!level) {
+    return (
+      <LevelSelect
+        gameId="animal-puzzle"
+        gameName="動物翻翻樂"
+        gameEmoji="🦁"
+        onSelectLevel={setLevel}
+        onBack={() => navigate('/')}
+      />
+    )
   }
 
   return (
@@ -125,6 +183,7 @@ export default function AnimalPuzzle() {
 
       <div className="animal-puzzle__header">
         <h1 className="animal-puzzle__title">🦁 動物記憶翻翻樂</h1>
+        <div className="animal-puzzle__level-badge">{config.label}</div>
         <p className="animal-puzzle__subtitle">
           翻開卡片，找出兩隻一樣的動物！
         </p>
@@ -172,6 +231,8 @@ export default function AnimalPuzzle() {
         message={`你翻了 ${attempts} 次就找到所有動物了！`}
         onReplay={resetGame}
         onHome={() => navigate('/')}
+        onNextLevel={nextLevelUnlocked ? handleNextLevel : undefined}
+        nextLevelLabel={nextLevelKey ? `挑戰${DIFFICULTY_LEVELS[nextLevelKey].label}` : undefined}
       />
     </div>
   )

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import confetti from 'canvas-confetti'
 import './WinModal.scss'
 
-export default function WinModal({ show, stars = 3, message = '你好棒！', onReplay, onHome }) {
+export default function WinModal({ show, stars = 3, message = '你好棒！', onReplay, onHome, onNextLevel, nextLevelLabel }) {
   const [visible, setVisible] = useState(false)
   
   useEffect(() => {
@@ -50,6 +50,11 @@ export default function WinModal({ show, stars = 3, message = '你好棒！', on
         </div>
         <p className="win-modal__message">{message}</p>
         <div className="win-modal__actions">
+          {onNextLevel && (
+            <button className="win-modal__btn win-modal__btn--next" onClick={onNextLevel}>
+              🚀 {nextLevelLabel || '下一關'}
+            </button>
+          )}
           <button className="win-modal__btn win-modal__btn--replay" onClick={onReplay}>
             🔄 再玩一次
           </button>

@@ -1,0 +1,108 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.profile-bar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+
+  &__current {
+    @include btn-base;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: $radius-xl;
+    box-shadow: $shadow-sm;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+  }
+
+  &__avatar {
+    font-size: 1.5rem;
+  }
+
+  &__name {
+    font-weight: 700;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__level {
+    background: $color-secondary;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  &__switch-icon {
+    font-size: 0.65rem;
+    opacity: 0.5;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+  }
+
+  &__option {
+    @include btn-base;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: transparent;
+    border-radius: 0;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba($color-secondary, 0.1);
+    }
+
+    &--logout {
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      justify-content: center;
+      font-weight: 600;
+      color: $color-primary;
+      font-size: 0.85rem;
+    }
+  }
+
+  &__option-avatar {
+    font-size: 1.3rem;
+  }
+
+  &__option-name {
+    font-weight: 600;
+    flex: 1;
+    text-align: left;
+  }
+
+  &__option-age {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+}

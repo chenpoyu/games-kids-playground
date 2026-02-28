@@ -1,0 +1,178 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.level-select {
+  @include game-container;
+  background: $bg-gradient-sky;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 20px;
+  overflow: hidden auto;
+
+  &__back {
+    @include btn-base;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: $radius-xl;
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+    box-shadow: $shadow-sm;
+    z-index: 10;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 40px;
+  }
+
+  &__emoji {
+    font-size: 4rem;
+    animation: float 3s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: $text-dark;
+    margin-bottom: 4px;
+  }
+
+  &__subtitle {
+    font-size: 1.1rem;
+    color: $text-light;
+    font-weight: 600;
+  }
+
+  &__levels {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 16px 40px;
+  }
+}
+
+.level-card {
+  @include btn-base;
+  position: relative;
+  width: 100%;
+  padding: 24px 20px;
+  border-radius: $radius-lg;
+  background: white;
+  box-shadow: $shadow-card;
+  text-align: center;
+  overflow: hidden;
+  animation: slideUp 0.5s ease forwards;
+  opacity: 0;
+
+  &.unlocked {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &.locked {
+    opacity: 0.5;
+    filter: grayscale(0.3);
+    cursor: not-allowed;
+
+    &:active {
+      transform: none;
+    }
+  }
+
+  &.perfect {
+    border: 2px solid #FFE66D;
+    box-shadow: 0 4px 20px rgba(255, 230, 109, 0.3);
+  }
+
+  &__lock {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border-radius: $radius-lg;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 14px;
+    border-radius: 0 $radius-lg 0 $radius-sm;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  &__icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+  }
+
+  &__name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $text-dark;
+    margin-bottom: 4px;
+  }
+
+  &__desc {
+    font-size: 0.85rem;
+    color: $text-light;
+    margin-bottom: 8px;
+  }
+
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__stars {
+    display: flex;
+    gap: 4px;
+    font-size: 1.2rem;
+  }
+
+  &__star {
+    &.active {
+      animation: sparkle 2s ease-in-out infinite;
+    }
+  }
+
+  &__count {
+    font-size: 0.75rem;
+    color: $text-light;
+  }
+
+  &__unlock-hint {
+    font-size: 0.75rem;
+    color: $text-light;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+}

@@ -1,9 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSound } from '../../hooks/useSound'
-import { useProgress } from '../../hooks/useProgress'
+import { useSpeak } from '../../hooks/useSpeak'
+import { useProfile, DIFFICULTY_LEVELS, getNextLevel } from '../../contexts/ProfileContext'
 import BackButton from '../../components/BackButton/BackButton'
 import WinModal from '../../components/WinModal/WinModal'
+import LevelSelect from '../../components/LevelSelect/LevelSelect'
 import './ABCLearn.scss'
 
 const ALPHABET_DATA = [
@@ -41,6 +43,14 @@ const GAME_MODES = [
   { id: 'order', title: '🔤 字母排序', description: '按照順序排列' },
 ]
 
+const LEVEL_CONFIG = {
+  beginner: { label: '初級', totalQuestions: 5, letterRange: 10, orderSize: 4 },
+  intermediate: { label: '中級', totalQuestions: 6, letterRange: 15, orderSize: 5 },
+  advanced: { label: '高級', totalQuestions: 8, letterRange: 20, orderSize: 6 },
+  expert: { label: '專家', totalQuestions: 10, letterRange: 26, orderSize: 7 },
+  master: { label: '大師', totalQuestions: 12, letterRange: 26, orderSize: 8 },
+}
+
 function shuffleArray(arr) {
   const shuffled = [...arr]
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -53,8 +63,10 @@ function shuffleArray(arr) {
 export default function ABCLearn() {
   const navigate = useNavigate()
   const { playCorrect, playWrong, playClick, playWin } = useSound()
-  const { recordGame } = useProgress()
-  const [mode, setMode] = useState(null) // null = menu, 'learn', 'match', 'order'
+  const { speakEn, speakDelayed } = useSpeak()
+  const { recordGame } = useProfile()
+  const [difficulty, setDifficulty] = useState(null)
+  const [mode, setMode] = useState(null)
   const [learnIndex, setLearnIndex] = useState(0)
   const [questionIndex, setQuestionIndex] = useState(0)
   const [question, setQuestion] = useState(null)
@@ -66,10 +78,45 @@ export default function ABCLearn() {
   const [orderSequence, setOrderSequence] = useState([])
   const [orderLetters, setOrderLetters] = useState([])
 
-  const totalQuestions = 8
+  const config = difficulty ? LEVEL_CONFIG[difficulty] : null
+  const totalQuestions = config?.totalQuestions || 8
+  const letterPool = config ? ALPHABET_DATA.slice(0, config.letterRange) : ALPHABET_DATA
+
+  // 學習模式自動播放語音
+  useEffect(() => {
+    if (mode !== 'learn' || !config) return
+    const pool = ALPHABET_DATA.slice(0, config.letterRange)
+    const item = pool[learnIndex]
+    if (item) {
+      setTimeout(() => speakEn(item.word), 300)
+    }
+  }, [mode, learnIndex, config, speakEn])
+
+  // 進入模式時的語音說明
+  useEffect(() => {
+    if (mode === 'learn') {
+      speakDelayed('Let\u2019s learn the alphabet!', 'en-US')
+    } else if (mode === 'match') {
+      speakDelayed('找出正確的英文字母！')
+    } else if (mode === 'order') {
+      speakDelayed('按照順序排列字母喔！')
+    }
+  }, [mode, speakDelayed])
+
+  // 追蹤已出過的題目，避免重複
+  const usedMatchIndices = useRef(new Set())
 
   const generateMatchQuestion = useCallback(() => {
-    const item = ALPHABET_DATA[Math.floor(Math.random() * ALPHABET_DATA.length)]
+    const pool = difficulty ? ALPHABET_DATA.slice(0, LEVEL_CONFIG[difficulty].letterRange) : ALPHABET_DATA
+    let available = pool.filter((_, i) => !usedMatchIndices.current.has(i))
+    if (available.length === 0) {
+      usedMatchIndices.current.clear()
+      available = pool
+    }
+    const item = available[Math.floor(Math.random() * available.length)]
+    const itemIdx = pool.indexOf(item)
+    usedMatchIndices.current.add(itemIdx)
+
     const wrongLetters = shuffleArray(
       ALPHABET_DATA.filter(a => a.letter !== item.letter)
     ).slice(0, 3).map(a => a.letter)
@@ -81,12 +128,13 @@ export default function ABCLearn() {
     })
     setSelectedAnswer(null)
     setIsCorrect(null)
-  }, [])
+  }, [difficulty])
 
   const generateOrderGame = useCallback(() => {
-    // Pick 5 consecutive letters
-    const startIdx = Math.floor(Math.random() * (ALPHABET_DATA.length - 5))
-    const letters = ALPHABET_DATA.slice(startIdx, startIdx + 5).map(a => a.letter)
+    const size = config?.orderSize || 5
+    const pool = difficulty ? ALPHABET_DATA.slice(0, LEVEL_CONFIG[difficulty].letterRange) : ALPHABET_DATA
+    const startIdx = Math.floor(Math.random() * (pool.length - size))
+    const letters = pool.slice(startIdx, startIdx + size).map(a => a.letter)
     setOrderLetters(shuffleArray([...letters]))
     setOrderSequence([])
   }, [])
@@ -109,7 +157,7 @@ export default function ABCLearn() {
         if (questionIndex + 1 >= totalQuestions) {
           playWin()
           const stars = errors === 0 ? 3 : errors <= 3 ? 2 : 1
-          recordGame('abc-learn', 'ABC 英文字母', stars, `字母配對，答對 ${score + 1} 題`)
+          recordGame('abc-learn', 'ABC 英文字母', stars, `${config.label} · 字母配對，答對 ${score + 1} 題`, difficulty)
           setShowWin(true)
         } else {
           setQuestionIndex(q => q + 1)
@@ -146,7 +194,7 @@ export default function ABCLearn() {
           if (questionIndex + 1 >= totalQuestions) {
             playWin()
             const stars = errors === 0 ? 3 : errors <= 3 ? 2 : 1
-            recordGame('abc-learn', 'ABC 英文字母', stars, `字母排序完成，答對 ${score + 1} 題`)
+            recordGame('abc-learn', 'ABC 英文字母', stars, `${config.label} · 字母排序完成，答對 ${score + 1} 題`, difficulty)
             setShowWin(true)
           } else {
             setQuestionIndex(q => q + 1)
@@ -172,6 +220,7 @@ export default function ABCLearn() {
     setIsCorrect(null)
     setOrderSequence([])
     setOrderLetters([])
+    usedMatchIndices.current.clear()
   }
 
   const getStars = () => {
@@ -180,31 +229,71 @@ export default function ABCLearn() {
     return 1
   }
 
+  const nextDifficulty = getNextLevel(difficulty)
+  const nextDifficultyUnlocked = nextDifficulty && getStars() >= 2
+
+  const handleNextDifficulty = () => {
+    const currentMode = mode
+    setDifficulty(nextDifficulty)
+    // 保持當前模式，只重設遊戲狀態
+    setLearnIndex(0)
+    setQuestionIndex(0)
+    setQuestion(null)
+    setScore(0)
+    setErrors(0)
+    setShowWin(false)
+    setSelectedAnswer(null)
+    setIsCorrect(null)
+    setOrderSequence([])
+    setOrderLetters([])
+    usedMatchIndices.current.clear()
+    // 保持模式不變，直接進入下一難度
+    setMode(currentMode)
+  }
+
+  if (!difficulty) {
+    return (
+      <LevelSelect
+        gameId="abc-learn"
+        gameName="ABC 英文字母"
+        gameEmoji="🔤"
+        onSelectLevel={setDifficulty}
+        onBack={() => navigate('/')}
+      />
+    )
+  }
+
   // Learning mode - browse alphabet cards
   if (mode === 'learn') {
-    const item = ALPHABET_DATA[learnIndex]
+    const item = letterPool[learnIndex]
     return (
       <div className="abc-learn">
         <BackButton />
         <div className="abc-learn__header">
           <h1 className="abc-learn__title">🔤 認識字母</h1>
+          <div className="abc-learn__level-badge">{config.label}</div>
           <p className="abc-learn__subtitle">
-            第 {learnIndex + 1} / {ALPHABET_DATA.length} 個字母
+            第 {learnIndex + 1} / {letterPool.length} 個字母
           </p>
         </div>
 
-        <div className="abc-learn__card-display">
+          <div className="abc-learn__card-display">
           <div className="abc-learn__big-card">
             <div className="abc-learn__big-letter">{item.letter}{item.letter.toLowerCase()}</div>
             <div className="abc-learn__big-emoji">{item.emoji}</div>
             <div className="abc-learn__big-word">
               <span className="abc-learn__english">{item.word}</span>
               <span className="abc-learn__chinese">{item.chinese}</span>
+              <button
+                className="abc-learn__speak-btn"
+                onClick={(e) => { e.stopPropagation(); speakEn(item.word) }}
+                title="播放語音"
+              >
+                🔊
+              </button>
             </div>
           </div>
-        </div>
-
-        <div className="abc-learn__nav">
+        </div>        <div className="abc-learn__nav">
           <button
             className="abc-learn__nav-btn"
             onClick={() => { playClick(); setLearnIndex(i => Math.max(0, i - 1)) }}
@@ -220,8 +309,8 @@ export default function ABCLearn() {
           </button>
           <button
             className="abc-learn__nav-btn"
-            onClick={() => { playClick(); setLearnIndex(i => Math.min(ALPHABET_DATA.length - 1, i + 1)) }}
-            disabled={learnIndex === ALPHABET_DATA.length - 1}
+            onClick={() => { playClick(); setLearnIndex(i => Math.min(letterPool.length - 1, i + 1)) }}
+            disabled={learnIndex === letterPool.length - 1}
           >
             下一個 ➡️
           </button>
@@ -237,6 +326,7 @@ export default function ABCLearn() {
         <BackButton />
         <div className="abc-learn__header">
           <h1 className="abc-learn__title">🎯 字母配對</h1>
+          <div className="abc-learn__level-badge">{config.label}</div>
           <div className="abc-learn__stats">
             <span className="abc-learn__stat">📝 {questionIndex + 1}/{totalQuestions}</span>
             <span className="abc-learn__stat">✅ {score}</span>
@@ -246,7 +336,16 @@ export default function ABCLearn() {
         <div className="abc-learn__match-game">
           <div className="abc-learn__match-prompt">
             <span className="abc-learn__match-emoji">{question.item.emoji}</span>
-            <span className="abc-learn__match-word">{question.item.word}</span>
+            <span className="abc-learn__match-word">
+              {question.item.word}
+              <button
+                className="abc-learn__speak-btn abc-learn__speak-btn--small"
+                onClick={(e) => { e.stopPropagation(); speakEn(question.item.word) }}
+                title="播放語音"
+              >
+                🔊
+              </button>
+            </span>
             <span className="abc-learn__match-hint">這個字的開頭是什麼字母？</span>
           </div>
 
@@ -274,6 +373,8 @@ export default function ABCLearn() {
           message={`你答對了 ${score} 題！`}
           onReplay={() => { setQuestionIndex(0); setScore(0); setErrors(0); setShowWin(false); generateMatchQuestion() }}
           onHome={() => navigate('/')}
+          onNextLevel={nextDifficultyUnlocked ? handleNextDifficulty : undefined}
+          nextLevelLabel={nextDifficulty ? `挑戰${DIFFICULTY_LEVELS[nextDifficulty].label}` : undefined}
         />
       </div>
     )
@@ -286,6 +387,7 @@ export default function ABCLearn() {
         <BackButton />
         <div className="abc-learn__header">
           <h1 className="abc-learn__title">🔤 字母排序</h1>
+          <div className="abc-learn__level-badge">{config.label}</div>
           <div className="abc-learn__stats">
             <span className="abc-learn__stat">📝 {questionIndex + 1}/{totalQuestions}</span>
             <span className="abc-learn__stat">✅ {score}</span>
@@ -322,6 +424,8 @@ export default function ABCLearn() {
           message={`字母排序完成！答對 ${score} 題！`}
           onReplay={() => { setQuestionIndex(0); setScore(0); setErrors(0); setShowWin(false); generateOrderGame() }}
           onHome={() => navigate('/')}
+          onNextLevel={nextDifficultyUnlocked ? handleNextDifficulty : undefined}
+          nextLevelLabel={nextDifficulty ? `挑戰${DIFFICULTY_LEVELS[nextDifficulty].label}` : undefined}
         />
       </div>
     )
@@ -333,6 +437,7 @@ export default function ABCLearn() {
       <BackButton />
       <div className="abc-learn__header">
         <h1 className="abc-learn__title">🔤 ABC 英文字母</h1>
+        <div className="abc-learn__level-badge">{config.label}</div>
         <p className="abc-learn__subtitle">選擇一個學習模式</p>
       </div>
 

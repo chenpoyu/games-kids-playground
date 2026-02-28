@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSound } from '../../hooks/useSound'
-import { useProgress } from '../../hooks/useProgress'
+import { useSpeak } from '../../hooks/useSpeak'
+import { useProfile, DIFFICULTY_LEVELS, getNextLevel } from '../../contexts/ProfileContext'
 import BackButton from '../../components/BackButton/BackButton'
 import WinModal from '../../components/WinModal/WinModal'
+import LevelSelect from '../../components/LevelSelect/LevelSelect'
 import './ShapeSort.scss'
 
 const ALL_SHAPES = [
@@ -37,6 +39,16 @@ const ALL_SHAPES = [
       <polygon points="50,5 92,50 50,95 8,50" />
     </svg>
   )},
+  { id: 'pentagon', name: '五邊形', color: '#22D3EE', svg: (
+    <svg viewBox="0 0 100 100" className="shape-svg">
+      <polygon points="50,5 95,38 77,90 23,90 5,38" />
+    </svg>
+  )},
+  { id: 'hexagon', name: '六邊形', color: '#FB923C', svg: (
+    <svg viewBox="0 0 100 100" className="shape-svg">
+      <polygon points="50,5 90,27 90,73 50,95 10,73 10,27" />
+    </svg>
+  )},
 ]
 
 function shuffleArray(arr) {
@@ -48,10 +60,20 @@ function shuffleArray(arr) {
   return shuffled
 }
 
+const LEVEL_CONFIG = {
+  beginner: { count: 3, label: '初級' },
+  intermediate: { count: 4, label: '中級' },
+  advanced: { count: 5, label: '高級' },
+  expert: { count: 6, label: '專家' },
+  master: { count: 8, label: '大師' },
+}
+
 export default function ShapeSort() {
   const navigate = useNavigate()
   const { playCorrect, playWrong, playClick, playWin } = useSound()
-  const { recordGame } = useProgress()
+  const { speakZh, speakDelayed } = useSpeak()
+  const { recordGame } = useProfile()
+  const [level, setLevel] = useState(null)
   const [shapes, setShapes] = useState([])
   const [targets, setTargets] = useState([])
   const [selected, setSelected] = useState(null)
@@ -59,10 +81,14 @@ export default function ShapeSort() {
   const [wrongId, setWrongId] = useState(null)
   const [showWin, setShowWin] = useState(false)
   const [errors, setErrors] = useState(0)
-  const puzzleCount = 6
+
+  const config = level ? LEVEL_CONFIG[level] : null
+  const puzzleCount = config?.count || 3
 
   const initGame = useCallback(() => {
-    const chosen = shuffleArray(ALL_SHAPES).slice(0, puzzleCount)
+    if (!level) return
+    const cfg = LEVEL_CONFIG[level]
+    const chosen = shuffleArray(ALL_SHAPES).slice(0, cfg.count)
     setShapes(shuffleArray([...chosen]))
     setTargets(shuffleArray([...chosen]))
     setSelected(null)
@@ -70,15 +96,23 @@ export default function ShapeSort() {
     setWrongId(null)
     setShowWin(false)
     setErrors(0)
-  }, [])
+  }, [level])
 
   useEffect(() => {
     initGame()
   }, [initGame])
 
+  // 進入關卡時的語音說明
+  useEffect(() => {
+    if (level) {
+      speakDelayed('先選一個彩色形狀，再找到它的位置放進去喔！')
+    }
+  }, [level, speakDelayed])
+
   const handleShapeClick = (shape) => {
     if (matched.includes(shape.id)) return
     playClick()
+    speakZh(shape.name)
     setSelected(shape)
     setWrongId(null)
   }
@@ -97,7 +131,7 @@ export default function ShapeSort() {
         setTimeout(() => {
           playWin()
           const stars = errors === 0 ? 3 : errors <= 3 ? 2 : 1
-          recordGame('shape-sort', '形狀排排看', stars, errors === 0 ? '全部正確！' : `錯了 ${errors} 次`)
+          recordGame('shape-sort', '形狀排排看', stars, `${config.label} · ${errors === 0 ? '全部正確！' : `錯了 ${errors} 次`}`, level)
           setShowWin(true)
         }, 500)
       }
@@ -111,8 +145,28 @@ export default function ShapeSort() {
 
   const getStars = () => {
     if (errors === 0) return 3
-    if (errors <= 3) return 2
+    if (errors <= 2) return 2
     return 1
+  }
+
+  const nextLevelKey = getNextLevel(level)
+  const nextLevelUnlocked = nextLevelKey && getStars() >= 2
+
+  const handleNextLevel = () => {
+    setLevel(nextLevelKey)
+    setShowWin(false)
+  }
+
+  if (!level) {
+    return (
+      <LevelSelect
+        gameId="shape-sort"
+        gameName="形狀排排看"
+        gameEmoji="🔷"
+        onSelectLevel={setLevel}
+        onBack={() => navigate('/')}
+      />
+    )
   }
 
   return (
@@ -121,6 +175,7 @@ export default function ShapeSort() {
 
       <div className="shape-sort__header">
         <h1 className="shape-sort__title">🔷 形狀排排看</h1>
+        <div className="shape-sort__level-badge">{config.label}</div>
         <p className="shape-sort__subtitle">
           {selected 
             ? `找到「${selected.name}」的位置！` 
@@ -186,6 +241,8 @@ export default function ShapeSort() {
         message={errors === 0 ? '太厲害了！全部都對！' : `只錯了 ${errors} 次，好棒！`}
         onReplay={initGame}
         onHome={() => navigate('/')}
+        onNextLevel={nextLevelUnlocked ? handleNextLevel : undefined}
+        nextLevelLabel={nextLevelKey ? `挑戰${DIFFICULTY_LEVELS[nextLevelKey].label}` : undefined}
       />
     </div>
   )

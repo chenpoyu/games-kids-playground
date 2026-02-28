@@ -1,9 +1,9 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.abc-learn {
+.zhuyin-learn {
   @include game-container;
-  background: linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 30%, #E8F5E9 100%);
+  background: linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 30%, #FFF8E1 100%);
   @include flex-column-center;
   padding-top: 60px;
   gap: $spacing-md;
@@ -15,7 +15,7 @@
 
   &__title {
     @include game-title;
-    color: #1565C0;
+    color: #E65100;
   }
 
   &__level-badge {
@@ -58,85 +58,65 @@
     @include btn-base;
     @include flex-column-center;
     padding: 24px 20px;
+    border-radius: $radius-md;
     background: white;
-    border-radius: $radius-lg;
-    border: 3px solid #90CAF9;
     box-shadow: $shadow-md;
-    gap: 6px;
-    animation: slideUp 0.4s ease backwards;
-
-    @for $i from 1 through 3 {
-      &:nth-child(#{$i}) {
-        animation-delay: #{$i * 0.1}s;
-      }
-    }
+    transition: all $transition-normal;
+    border: 3px solid transparent;
 
     &:hover {
       transform: translateY(-4px) scale(1.02);
-      border-color: #42A5F5;
       box-shadow: $shadow-lg;
+      border-color: $color-orange;
     }
   }
 
   &__menu-title {
     font-size: 1.4rem;
     font-weight: 900;
-    color: #1565C0;
-
-    @include mobile {
-      font-size: 1.2rem;
-    }
+    margin-bottom: 4px;
   }
 
   &__menu-desc {
-    font-size: 0.95rem;
     color: $text-light;
+    font-size: 0.95rem;
   }
 
-  // === Learn Mode Card ===
+  // === Learn mode ===
   &__card-display {
     @include flex-center;
-    padding: 0 16px;
     width: 100%;
+    padding: 0 16px;
   }
 
   &__big-card {
+    @include card($spacing-2xl);
     @include flex-column-center;
-    background: white;
     border-radius: $radius-xl;
-    padding: 32px 40px;
-    box-shadow: $shadow-lg;
-    border: 4px solid #90CAF9;
-    gap: 12px;
-    animation: popIn 0.5s ease;
-    max-width: 320px;
+    max-width: 350px;
     width: 100%;
-
-    @include mobile {
-      padding: 24px 28px;
-    }
+    background: white;
+    border: 4px solid $color-orange;
+    animation: popIn 0.5s ease;
   }
 
-  &__big-letter {
-    font-size: 4rem;
+  &__big-symbol {
+    font-size: 6rem;
     font-weight: 900;
-    color: #1565C0;
-    letter-spacing: 8px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    color: #E65100;
+    line-height: 1;
+    margin-bottom: $spacing-sm;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
 
     @include mobile {
-      font-size: 3rem;
-      letter-spacing: 6px;
+      font-size: 4.5rem;
     }
   }
 
   &__big-emoji {
-    font-size: 4rem;
+    font-size: 3rem;
+    margin-bottom: $spacing-sm;
     animation: float 3s ease-in-out infinite;
-
-    @include mobile {
-      font-size: 3rem;
-    }
   }
 
   &__big-word {
@@ -144,19 +124,10 @@
     gap: 4px;
   }
 
-  &__english {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #1976D2;
-
-    @include mobile {
-      font-size: 1.3rem;
-    }
-  }
-
-  &__chinese {
-    font-size: 1.1rem;
-    color: $text-light;
+  &__word-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $text-dark;
   }
 
   // === 語音播放按鈕 ===
@@ -169,8 +140,8 @@
     height: 52px;
     font-size: 1.8rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1976D2, #42A5F5);
-    box-shadow: 0 4px 12px rgba(#1976D2, 0.3);
+    background: linear-gradient(135deg, #FF9800, #FFB74D);
+    box-shadow: 0 4px 12px rgba(#FF9800, 0.3);
     margin-top: 8px;
     transition: all 0.3s ease;
     border: none;
@@ -178,7 +149,7 @@
 
     &:hover {
       transform: scale(1.15);
-      box-shadow: 0 6px 18px rgba(#1976D2, 0.4);
+      box-shadow: 0 6px 18px rgba(#FF9800, 0.4);
     }
 
     &:active {
@@ -195,42 +166,40 @@
     }
   }
 
+  // === Nav buttons ===
   &__nav {
     display: flex;
     gap: $spacing-sm;
-    flex-wrap: wrap;
     justify-content: center;
+    flex-wrap: wrap;
     padding: 0 16px;
   }
 
   &__nav-btn {
     @include btn-base;
     padding: 12px 20px;
-    background: white;
     border-radius: $radius-lg;
-    border: 2px solid #90CAF9;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1565C0;
+    background: white;
     box-shadow: $shadow-sm;
+    font-weight: 700;
+    transition: all $transition-normal;
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      border-color: #42A5F5;
       box-shadow: $shadow-md;
     }
 
     &:disabled {
       opacity: 0.4;
-      cursor: default;
     }
 
     &--back {
-      background: #E3F2FD;
+      background: $color-orange;
+      color: white;
     }
   }
 
-  // === Match Game ===
+  // === Match mode ===
   &__match-game {
     @include flex-column-center;
     gap: $spacing-lg;
@@ -241,33 +210,27 @@
 
   &__match-prompt {
     @include flex-column-center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 24px;
+    gap: $spacing-sm;
+    background: white;
+    padding: $spacing-xl;
     border-radius: $radius-lg;
-    box-shadow: $shadow-sm;
+    box-shadow: $shadow-md;
+    width: 100%;
+    animation: popIn 0.5s ease;
   }
 
   &__match-emoji {
     font-size: 4rem;
     animation: float 3s ease-in-out infinite;
-
-    @include mobile {
-      font-size: 3rem;
-    }
   }
 
   &__match-word {
     font-size: 1.8rem;
     font-weight: 900;
-    color: #1565C0;
+    color: $text-dark;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-
-    @include mobile {
-      font-size: 1.4rem;
-    }
   }
 
   &__match-hint {
@@ -278,113 +241,95 @@
   &__match-choices {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: $spacing-md;
     width: 100%;
-    max-width: 300px;
   }
 
   &__match-btn {
     @include btn-base;
-    @include flex-center;
-    padding: 24px;
-    background: white;
-    border-radius: $radius-lg;
-    border: 3px solid #90CAF9;
+    padding: 20px;
     font-size: 2.2rem;
     font-weight: 900;
-    color: #1565C0;
+    border-radius: $radius-lg;
+    background: white;
     box-shadow: $shadow-md;
+    transition: all $transition-bounce;
+    border: 3px solid transparent;
 
     &:hover {
-      transform: translateY(-3px) scale(1.05);
-      border-color: #42A5F5;
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: $shadow-lg;
+      border-color: $color-orange;
     }
 
     &.correct {
-      background: #C8E6C9;
-      border-color: #4CAF50;
-      animation: pulse 0.5s ease;
+      background: $color-green;
+      color: white;
+      animation: correctPop 0.5s ease;
     }
 
     &.wrong {
-      background: #FFCDD2;
-      border-color: #EF5350;
-      animation: shake 0.4s ease;
+      background: $color-primary;
+      color: white;
+      animation: shake 0.5s ease;
     }
 
     &.show-correct {
-      border-color: #4CAF50;
-      box-shadow: 0 0 15px rgba(#4CAF50, 0.4);
-    }
-
-    @include mobile {
-      padding: 18px;
-      font-size: 1.8rem;
+      border-color: $color-green;
+      box-shadow: 0 0 15px rgba($color-green, 0.4);
     }
   }
 
-  // === Order Game ===
+  // === Order mode ===
   &__order-game {
     @include flex-column-center;
     gap: $spacing-lg;
     width: 100%;
-    max-width: 420px;
+    max-width: 480px;
     padding: 0 16px;
   }
 
   &__order-prompt {
     font-size: 1.3rem;
-    font-weight: 700;
-    color: #1565C0;
+    font-weight: 800;
+    color: $text-dark;
     text-align: center;
   }
 
   &__order-done {
     display: flex;
-    gap: 8px;
+    gap: $spacing-sm;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: $radius-lg;
     min-height: 60px;
-    min-width: 200px;
-    box-shadow: $shadow-sm;
   }
 
-  &__order-num {
+  &__order-item {
     @include flex-center;
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     border-radius: $radius-md;
+    font-size: 1.8rem;
     font-weight: 900;
-    font-size: 1.4rem;
 
     &.done {
-      background: linear-gradient(135deg, #1976D2, #42A5F5);
+      background: $color-green;
       color: white;
       animation: popIn 0.3s ease;
-      box-shadow: 0 2px 8px rgba(#1976D2, 0.4);
     }
 
     &.next {
-      background: rgba(0, 0, 0, 0.08);
-      color: #999;
-      border: 2px dashed #90CAF9;
-      animation: pulse 1s ease-in-out infinite;
-    }
-
-    @include mobile {
-      width: 40px;
-      height: 40px;
-      font-size: 1.2rem;
+      background: rgba(0, 0, 0, 0.06);
+      color: $text-light;
+      font-size: 1.5rem;
+      border: 2px dashed rgba(0, 0, 0, 0.2);
     }
   }
 
   &__order-choices {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: $spacing-sm;
     justify-content: center;
   }
 
@@ -393,29 +338,21 @@
     @include flex-center;
     width: 60px;
     height: 60px;
+    font-size: 1.8rem;
+    font-weight: 900;
     border-radius: $radius-md;
     background: white;
-    border: 3px solid #90CAF9;
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: #1565C0;
     box-shadow: $shadow-md;
+    transition: all $transition-bounce;
 
-    &:hover:not(.used) {
-      transform: scale(1.1);
-      border-color: #42A5F5;
+    &:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: $shadow-lg;
     }
 
     &.used {
       opacity: 0.3;
-      transform: scale(0.8);
-      pointer-events: none;
-    }
-
-    @include mobile {
-      width: 50px;
-      height: 50px;
-      font-size: 1.3rem;
+      transform: scale(0.9);
     }
   }
 }

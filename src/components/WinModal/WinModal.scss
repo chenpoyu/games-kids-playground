@@ -119,6 +119,18 @@
       }
     }
     
+    &--next {
+      background: linear-gradient(135deg, $color-purple, $color-primary);
+      color: $text-white;
+      box-shadow: 0 4px 15px rgba($color-purple, 0.4);
+      animation: pulse 1.5s ease-in-out infinite;
+
+      &:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba($color-purple, 0.5);
+      }
+    }
+
     &--home {
       background: $color-secondary;
       color: $text-white;
@@ -130,4 +142,9 @@
       }
     }
   }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
 }

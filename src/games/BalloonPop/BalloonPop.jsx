@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSound } from '../../hooks/useSound'
-import { useProgress } from '../../hooks/useProgress'
+import { useSpeak } from '../../hooks/useSpeak'
+import { useProfile, DIFFICULTY_LEVELS, getNextLevel } from '../../contexts/ProfileContext'
 import BackButton from '../../components/BackButton/BackButton'
 import WinModal from '../../components/WinModal/WinModal'
+import LevelSelect from '../../components/LevelSelect/LevelSelect'
 import './BalloonPop.scss'
 
 const BALLOON_COLORS = [
@@ -48,17 +50,48 @@ function generateBalloons(count = 7) {
   return balloons
 }
 
+const LEVEL_CONFIG = {
+  beginner: { count: 5, label: '初級' },
+  intermediate: { count: 7, label: '中級' },
+  advanced: { count: 9, label: '高級' },
+  expert: { count: 12, label: '專家' },
+  master: { count: 15, label: '大師' },
+}
+
 export default function BalloonPop() {
   const navigate = useNavigate()
   const { playPop, playWrong, playWin } = useSound()
-  const { recordGame } = useProgress()
-  const [balloons, setBalloons] = useState(() => generateBalloons(7))
+  const { speakZh, speakDelayed } = useSpeak()
+  const { recordGame } = useProfile()
+  const [level, setLevel] = useState(null)
+  const [balloons, setBalloons] = useState([])
   const [nextNumber, setNextNumber] = useState(1)
   const [showWin, setShowWin] = useState(false)
   const [errors, setErrors] = useState(0)
   const [poppedCount, setPoppedCount] = useState(0)
   const [wrongBalloon, setWrongBalloon] = useState(null)
-  const totalBalloons = 7
+
+  const config = level ? LEVEL_CONFIG[level] : null
+  const totalBalloons = config?.count || 7
+
+  useEffect(() => {
+    if (level) {
+      const cfg = LEVEL_CONFIG[level]
+      setBalloons(generateBalloons(cfg.count))
+      setNextNumber(1)
+      setShowWin(false)
+      setErrors(0)
+      setPoppedCount(0)
+      setWrongBalloon(null)
+    }
+  }, [level])
+
+  // 進入關卡時的語音說明
+  useEffect(() => {
+    if (level) {
+      speakDelayed('按照一、二、三的順序戳氣球喔！')
+    }
+  }, [level, speakDelayed])
 
   const handleBalloonClick = useCallback((balloon) => {
     if (balloon.popped) return
@@ -66,6 +99,7 @@ export default function BalloonPop() {
     if (balloon.number === nextNumber) {
       // 正確！戳破氣球
       playPop()
+      speakZh(String(balloon.number))
       setBalloons(prev => prev.map(b => 
         b.id === balloon.id ? { ...b, popped: true } : b
       ))
@@ -76,7 +110,7 @@ export default function BalloonPop() {
         setTimeout(() => {
           playWin()
           const stars = errors === 0 ? 3 : errors <= 3 ? 2 : 1
-          recordGame('balloon-pop', '數字氣球', stars, errors === 0 ? '零失誤！' : `錯了 ${errors} 次`)
+          recordGame('balloon-pop', '數字氣球', stars, `${config.label} · ${errors === 0 ? '零失誤！' : `錯了 ${errors} 次`}`, level)
           setShowWin(true)
         }, 600)
       }
@@ -90,18 +124,40 @@ export default function BalloonPop() {
   }, [nextNumber, playPop, playWrong, playWin, totalBalloons])
 
   const resetGame = () => {
-    setBalloons(generateBalloons(7))
-    setNextNumber(1)
-    setShowWin(false)
-    setErrors(0)
-    setPoppedCount(0)
-    setWrongBalloon(null)
+    if (level) {
+      setBalloons(generateBalloons(LEVEL_CONFIG[level].count))
+      setNextNumber(1)
+      setShowWin(false)
+      setErrors(0)
+      setPoppedCount(0)
+      setWrongBalloon(null)
+    }
   }
 
   const getStars = () => {
     if (errors === 0) return 3
-    if (errors <= 3) return 2
+    if (errors <= 2) return 2
     return 1
+  }
+
+  const nextLevelKey = getNextLevel(level)
+  const nextLevelUnlocked = nextLevelKey && getStars() >= 2
+
+  const handleNextLevel = () => {
+    setLevel(nextLevelKey)
+    setShowWin(false)
+  }
+
+  if (!level) {
+    return (
+      <LevelSelect
+        gameId="balloon-pop"
+        gameName="數字氣球"
+        gameEmoji="🎈"
+        onSelectLevel={setLevel}
+        onBack={() => navigate('/')}
+      />
+    )
   }
 
   return (
@@ -110,6 +166,7 @@ export default function BalloonPop() {
 
       <div className="balloon-pop__header">
         <h1 className="balloon-pop__title">🎈 數字氣球</h1>
+        <div className="balloon-pop__level-badge">{config.label}</div>
         <p className="balloon-pop__subtitle">
           按照 <strong>1, 2, 3...</strong> 的順序戳氣球！
         </p>
@@ -162,9 +219,11 @@ export default function BalloonPop() {
       <WinModal
         show={showWin}
         stars={getStars()}
-        message={errors === 0 ? '完美！你知道 1 到 7 的順序！' : `你只犯了 ${errors} 個小錯誤！`}
+        message={errors === 0 ? '完美！你知道順序！' : `你只犯了 ${errors} 個小錯誤！`}
         onReplay={resetGame}
         onHome={() => navigate('/')}
+        onNextLevel={nextLevelUnlocked ? handleNextLevel : undefined}
+        nextLevelLabel={nextLevelKey ? `挑戰${DIFFICULTY_LEVELS[nextLevelKey].label}` : undefined}
       />
     </div>
   )
