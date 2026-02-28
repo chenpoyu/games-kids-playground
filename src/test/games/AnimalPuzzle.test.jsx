@@ -19,21 +19,34 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 0, gamesPlayed: 0, history: [], achievements: [], lastPlayed: null },
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: [], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
     recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
+  DIFFICULTY_LEVELS: {
+    beginner: { label: '初級', color: '#4CAF50', emoji: '🌱', description: '最適合初學者' },
+    intermediate: { label: '中級', color: '#2196F3', emoji: '🌺', description: '有一點基礎' },
+    advanced: { label: '高級', color: '#FF9800', emoji: '⭐', description: '経驗豐富' },
+    expert: { label: '專家', color: '#9C27B0', emoji: '🔥', description: '十分熟練' },
+    master: { label: '大師', color: '#F44336', emoji: '👑', description: '終極挑戰' },
+  },
+  LEVEL_ORDER: ['beginner', 'intermediate', 'advanced', 'expert', 'master'],
+  getNextLevel: () => 'intermediate',
+  ACHIEVEMENTS: {},
 }))
 
 function renderGame() {
-  return render(
+  const result = render(
     <MemoryRouter>
       <AnimalPuzzle />
     </MemoryRouter>
   )
+  // Games now show LevelSelect first; click '初級' to enter the game
+  fireEvent.click(screen.getAllByText('初級')[0])
+  return result
 }
 
 describe('AnimalPuzzle', () => {
@@ -56,15 +69,15 @@ describe('AnimalPuzzle', () => {
     expect(screen.getByText('回首頁')).toBeInTheDocument()
   })
 
-  it('renders 12 cards (6 pairs)', () => {
+  it('renders 6 cards (3 pairs)', () => {
     renderGame()
     const leafCards = screen.getAllByText('🌿')
-    expect(leafCards).toHaveLength(12)
+    expect(leafCards).toHaveLength(6)
   })
 
   it('displays initial stats', () => {
     renderGame()
-    expect(screen.getByText(/找到 0\/6 對/)).toBeInTheDocument()
+    expect(screen.getByText(/找到 0\/3 對/)).toBeInTheDocument()
     expect(screen.getByText(/翻了 0 次/)).toBeInTheDocument()
   })
 
@@ -113,7 +126,7 @@ describe('AnimalPuzzle', () => {
     }
 
     await act(async () => { vi.advanceTimersByTime(700) })
-    expect(screen.getByText(/找到 1\/6 對/)).toBeInTheDocument()
+    expect(screen.getByText(/找到 1\/3 對/)).toBeInTheDocument()
     vi.useRealTimers()
   })
 

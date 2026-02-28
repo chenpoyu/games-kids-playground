@@ -19,21 +19,34 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 0, gamesPlayed: 0, history: [], achievements: [], lastPlayed: null },
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: [], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
     recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
+  DIFFICULTY_LEVELS: {
+    beginner: { label: '初級', color: '#4CAF50', emoji: '🌱', description: '最適合初學者' },
+    intermediate: { label: '中級', color: '#2196F3', emoji: '🌺', description: '有一點基礎' },
+    advanced: { label: '高級', color: '#FF9800', emoji: '⭐', description: '経驗豐富' },
+    expert: { label: '專家', color: '#9C27B0', emoji: '🔥', description: '十分熟練' },
+    master: { label: '大師', color: '#F44336', emoji: '👑', description: '終極挑戰' },
+  },
+  LEVEL_ORDER: ['beginner', 'intermediate', 'advanced', 'expert', 'master'],
+  getNextLevel: () => 'intermediate',
+  ACHIEVEMENTS: {},
 }))
 
 function renderGame() {
-  return render(
+  const result = render(
     <MemoryRouter>
       <NumberLearn />
     </MemoryRouter>
   )
+  // Games now show LevelSelect first; click '初級' to enter the game
+  fireEvent.click(screen.getAllByText('初級')[0])
+  return result
 }
 
 describe('NumberLearn', () => {
@@ -58,9 +71,9 @@ describe('NumberLearn', () => {
 
   it('renders stats', () => {
     renderGame()
-    expect(screen.getByText(/第 1\/5 題/)).toBeInTheDocument()
+    expect(screen.getByText(/第 1\/3 題/)).toBeInTheDocument()
     expect(screen.getByText(/答對 0 題/)).toBeInTheDocument()
-    expect(screen.getByText(/第 1 關/)).toBeInTheDocument()
+    expect(screen.getByText(/第 1\/1 關/)).toBeInTheDocument()
   })
 
   it('renders a count question with items and choices', () => {
@@ -118,16 +131,16 @@ describe('NumberLearn', () => {
       fireEvent.click(wrongBtn)
       await act(async () => { vi.advanceTimersByTime(1000) })
       // Still on question 1, can retry
-      expect(screen.getByText(/第 1\/5 題/)).toBeInTheDocument()
+      expect(screen.getByText(/第 1\/3 題/)).toBeInTheDocument()
     }
     vi.useRealTimers()
   })
 
-  it('completing 5 correct answers shows win modal', async () => {
+  it('completing 3 correct answers shows win modal', async () => {
     vi.useFakeTimers()
     renderGame()
 
-    for (let q = 0; q < 5; q++) {
+    for (let q = 0; q < 3; q++) {
       // Re-query items every iteration since question changes
       const items = document.querySelectorAll('.number-learn__item')
       const correctCount = items.length

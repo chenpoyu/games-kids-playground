@@ -19,21 +19,34 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 0, gamesPlayed: 0, history: [], achievements: [], lastPlayed: null },
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: [], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
     recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
+  DIFFICULTY_LEVELS: {
+    beginner: { label: '初級', color: '#4CAF50', emoji: '🌱', description: '最適合初學者' },
+    intermediate: { label: '中級', color: '#2196F3', emoji: '🌺', description: '有一點基礎' },
+    advanced: { label: '高級', color: '#FF9800', emoji: '⭐', description: '経驗豐富' },
+    expert: { label: '專家', color: '#9C27B0', emoji: '🔥', description: '十分熟練' },
+    master: { label: '大師', color: '#F44336', emoji: '👑', description: '終極挑戰' },
+  },
+  LEVEL_ORDER: ['beginner', 'intermediate', 'advanced', 'expert', 'master'],
+  getNextLevel: () => 'intermediate',
+  ACHIEVEMENTS: {},
 }))
 
 function renderGame() {
-  return render(
+  const result = render(
     <MemoryRouter>
       <ABCLearn />
     </MemoryRouter>
   )
+  // Games now show LevelSelect first; click '初級' to enter the game
+  fireEvent.click(screen.getAllByText('初級')[0])
+  return result
 }
 
 describe('ABCLearn', () => {
@@ -86,7 +99,7 @@ describe('ABCLearn', () => {
     it('shows letter counter', () => {
       renderGame()
       fireEvent.click(screen.getByText('📖 認識字母'))
-      expect(screen.getByText(/第 1 \/ 26 個字母/)).toBeInTheDocument()
+      expect(screen.getByText(/第 1 \/ 10 個字母/)).toBeInTheDocument()
     })
 
     it('navigates to next letter', () => {
@@ -95,7 +108,7 @@ describe('ABCLearn', () => {
       fireEvent.click(screen.getByText('下一個 ➡️'))
       expect(screen.getByText('Bb')).toBeInTheDocument()
       expect(screen.getByText('Bear')).toBeInTheDocument()
-      expect(screen.getByText(/第 2 \/ 26 個字母/)).toBeInTheDocument()
+      expect(screen.getByText(/第 2 \/ 10 個字母/)).toBeInTheDocument()
     })
 
     it('navigates to previous letter', () => {
@@ -132,7 +145,7 @@ describe('ABCLearn', () => {
     it('shows stats', () => {
       renderGame()
       fireEvent.click(screen.getByText('🎯 字母配對'))
-      expect(screen.getByText('📝 1/8')).toBeInTheDocument()
+      expect(screen.getByText('📝 1/5')).toBeInTheDocument()
       expect(screen.getByText('✅ 0')).toBeInTheDocument()
     })
 
@@ -191,17 +204,17 @@ describe('ABCLearn', () => {
       if (wrongBtn) {
         fireEvent.click(wrongBtn)
         await act(async () => { vi.advanceTimersByTime(1000) })
-        expect(screen.getByText('📝 1/8')).toBeInTheDocument()
+        expect(screen.getByText('📝 1/5')).toBeInTheDocument()
       }
       vi.useRealTimers()
     })
 
-    it('completing 8 correct answers shows win modal', async () => {
+    it('completing 5 correct answers shows win modal', async () => {
       vi.useFakeTimers()
       renderGame()
       fireEvent.click(screen.getByText('🎯 字母配對'))
 
-      for (let q = 0; q < 8; q++) {
+      for (let q = 0; q < 5; q++) {
         const wordEl = document.querySelector('.abc-learn__match-word')
         if (!wordEl) break
         const word = wordEl.textContent

@@ -20,7 +20,8 @@ vi.mock('../../hooks/useSound', () => ({
 }))
 
 const mockResetProgress = vi.fn()
-let mockProgress = {
+let mockActiveProfile = {
+  id: '1', name: '小明', age: 5, avatar: '🐶',
   totalStars: 15,
   gamesPlayed: 5,
   history: [
@@ -28,15 +29,16 @@ let mockProgress = {
     { id: 2, gameId: 'animal-puzzle', gameName: '動物翻翻樂', stars: 2, details: '翻了 12 次', date: '2026-02-01T11:00:00.000Z' },
   ],
   achievements: ['first-game', 'perfect-game'],
-  lastPlayed: '2026-02-01T11:00:00.000Z',
+  unlockedGames: [],
+  levelProgress: {},
 }
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: mockProgress,
-    recordGame: vi.fn(),
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: mockActiveProfile,
+    profiles: [],
+    switchProfile: vi.fn(),
     resetProgress: mockResetProgress,
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
   ACHIEVEMENTS: {
     'first-game': { emoji: '🎉', title: '初次冒險', desc: '完成第一個遊戲' },
@@ -63,7 +65,7 @@ describe('History', () => {
 
   it('renders page title', () => {
     renderPage()
-    expect(screen.getByText('📚 學習履歷')).toBeInTheDocument()
+    expect(screen.getByText('📚 小明 的學習履歷')).toBeInTheDocument()
   })
 
   it('renders subtitle', () => {
@@ -154,20 +156,20 @@ describe('History', () => {
   })
 
   it('shows empty state when no history', () => {
-    const original = mockProgress
-    mockProgress = { ...original, history: [] }
+    const original = mockActiveProfile
+    mockActiveProfile = { ...original, history: [] }
     renderPage()
     expect(screen.getByText('還沒有遊玩紀錄')).toBeInTheDocument()
     expect(screen.getByText('🎮 開始玩遊戲')).toBeInTheDocument()
-    mockProgress = original
+    mockActiveProfile = original
   })
 
   it('clicking play button in empty state navigates to home', () => {
-    const original = mockProgress
-    mockProgress = { ...original, history: [] }
+    const original = mockActiveProfile
+    mockActiveProfile = { ...original, history: [] }
     renderPage()
     fireEvent.click(screen.getByText('🎮 開始玩遊戲'))
     expect(mockNavigate).toHaveBeenCalledWith('/')
-    mockProgress = original
+    mockActiveProfile = original
   })
 })

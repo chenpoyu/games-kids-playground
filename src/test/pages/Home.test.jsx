@@ -19,13 +19,24 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 10, gamesPlayed: 3, history: [], achievements: ['first-game'], lastPlayed: null },
-    recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: {
+      id: '1', name: '小明', age: 5, avatar: '🐶',
+      totalStars: 10, gamesPlayed: 3,
+      achievements: ['first-game'],
+      history: [], unlockedGames: ['color-match', 'animal-puzzle', 'balloon-pop', 'shape-sort', 'number-learn', 'abc-learn'],
+      levelProgress: {},
+    },
+    profiles: [],
+    switchProfile: vi.fn(),
   }),
+  AGE_GROUPS: [
+    { age: 2, label: '2歲', emoji: '👶' },
+    { age: 3, label: '3歲', emoji: '🧒' },
+    { age: 4, label: '4歲', emoji: '👧' },
+    { age: 5, label: '5歲', emoji: '👦' },
+  ],
 }))
 
 function renderPage() {
@@ -49,7 +60,7 @@ describe('Home', () => {
 
   it('renders subtitle', () => {
     renderPage()
-    expect(screen.getByText(/和小動物們一起玩遊戲/)).toBeInTheDocument()
+    expect(screen.getByText(/小明，歡迎回來！/)).toBeInTheDocument()
   })
 
   it('renders progress stats', () => {
@@ -78,7 +89,7 @@ describe('Home', () => {
 
   it('renders 4 game cards', () => {
     renderPage()
-    expect(screen.getByText('顏色配對')).toBeInTheDocument()
+    expect(screen.getAllByText('顏色配對').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('動物翻翻樂')).toBeInTheDocument()
     expect(screen.getByText('數字氣球')).toBeInTheDocument()
     expect(screen.getByText('形狀排排看')).toBeInTheDocument()
@@ -109,8 +120,9 @@ describe('Home', () => {
 
   it('clicking a game card navigates to the game', () => {
     renderPage()
-    const colorMatch = screen.getByText('顏色配對').closest('button')
-    fireEvent.click(colorMatch)
+    // 顏色配對 appears in both the game card and the recommendation section
+    const colorMatch = screen.getAllByText('顏色配對').find(el => el.closest('button.game-card'))
+    fireEvent.click(colorMatch.closest('button'))
     expect(mockNavigate).toHaveBeenCalledWith('/color-match')
   })
 

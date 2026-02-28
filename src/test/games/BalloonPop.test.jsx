@@ -19,21 +19,34 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 0, gamesPlayed: 0, history: [], achievements: [], lastPlayed: null },
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: [], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
     recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
+  DIFFICULTY_LEVELS: {
+    beginner: { label: '初級', color: '#4CAF50', emoji: '🌱', description: '最適合初學者' },
+    intermediate: { label: '中級', color: '#2196F3', emoji: '🌺', description: '有一點基礎' },
+    advanced: { label: '高級', color: '#FF9800', emoji: '⭐', description: '経驗豐富' },
+    expert: { label: '專家', color: '#9C27B0', emoji: '🔥', description: '十分熟練' },
+    master: { label: '大師', color: '#F44336', emoji: '👑', description: '終極挑戰' },
+  },
+  LEVEL_ORDER: ['beginner', 'intermediate', 'advanced', 'expert', 'master'],
+  getNextLevel: () => 'intermediate',
+  ACHIEVEMENTS: {},
 }))
 
 function renderGame() {
-  return render(
+  const result = render(
     <MemoryRouter>
       <BalloonPop />
     </MemoryRouter>
   )
+  // Games now show LevelSelect first; click '初級' to enter the game
+  fireEvent.click(screen.getAllByText('初級')[0])
+  return result
 }
 
 describe('BalloonPop', () => {
@@ -56,17 +69,17 @@ describe('BalloonPop', () => {
     expect(screen.getByText('回首頁')).toBeInTheDocument()
   })
 
-  it('renders 7 balloons with numbers 1-7', () => {
+  it('renders 5 balloons with numbers 1-5', () => {
     renderGame()
     const balloonNumbers = document.querySelectorAll('.balloon__number')
-    expect(balloonNumbers).toHaveLength(7)
+    expect(balloonNumbers).toHaveLength(5)
     const numbers = [...balloonNumbers].map(el => Number(el.textContent)).sort((a, b) => a - b)
-    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7])
+    expect(numbers).toEqual([1, 2, 3, 4, 5])
   })
 
   it('displays next number hint as 1 initially', () => {
     renderGame()
-    expect(screen.getByText(/0\/7/)).toBeInTheDocument()
+    expect(screen.getByText(/0\/5/)).toBeInTheDocument()
   })
 
   it('popping correct balloon (1) advances next number', async () => {
@@ -76,7 +89,7 @@ describe('BalloonPop', () => {
     const btn1 = num1.closest('button')
     fireEvent.click(btn1)
     await act(async () => { vi.advanceTimersByTime(100) })
-    expect(screen.getByText(/1\/7/)).toBeInTheDocument()
+    expect(screen.getByText(/1\/5/)).toBeInTheDocument()
     vi.useRealTimers()
   })
 
@@ -89,14 +102,14 @@ describe('BalloonPop', () => {
     fireEvent.click(btn3)
     await act(async () => { vi.advanceTimersByTime(100) })
     // Still 0 popped
-    expect(screen.getByText(/0\/7/)).toBeInTheDocument()
+    expect(screen.getByText(/0\/5/)).toBeInTheDocument()
     vi.useRealTimers()
   })
 
   it('pops all balloons in order to win', async () => {
     vi.useFakeTimers()
     renderGame()
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 5; i++) {
       const numEl = [...document.querySelectorAll('.balloon__number')].find(el => el.textContent === String(i))
       const btn = numEl.closest('button')
       fireEvent.click(btn)
@@ -116,7 +129,7 @@ describe('BalloonPop', () => {
   it('reset works after winning', async () => {
     vi.useFakeTimers()
     renderGame()
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 5; i++) {
       const numEl = [...document.querySelectorAll('.balloon__number')].find(el => el.textContent === String(i))
       const btn = numEl.closest('button')
       fireEvent.click(btn)
@@ -126,7 +139,7 @@ describe('BalloonPop', () => {
     expect(screen.getByText('恭喜過關！')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('🔄 再玩一次'))
-    expect(screen.getByText(/0\/7/)).toBeInTheDocument()
+    expect(screen.getByText(/0\/5/)).toBeInTheDocument()
     vi.useRealTimers()
   })
 })

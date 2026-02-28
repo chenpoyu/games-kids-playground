@@ -1,7 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import App from '../App'
+
+vi.mock('../contexts/ProfileContext', () => ({
+  ProfileProvider: ({ children }) => children,
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: ['color-match', 'animal-puzzle', 'balloon-pop', 'shape-sort', 'number-learn', 'abc-learn'], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
+    recordGame: vi.fn(),
+    resetProgress: vi.fn(),
+  }),
+  AGE_GROUPS: [{ age: 5, label: '5歲', emoji: '🐶' }],
+  DIFFICULTY_LEVELS: { beginner: { label: '初級', color: '#4CAF50' } },
+  LEVEL_ORDER: ['beginner'],
+  ACHIEVEMENTS: {},
+  getNextLevel: () => null,
+}))
 
 describe('App Routing', () => {
   it('renders Home page on default route', () => {
@@ -22,7 +38,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders AnimalPuzzle game', () => {
@@ -31,7 +47,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders BalloonPop game', () => {
@@ -40,7 +56,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders ShapeSort game', () => {
@@ -49,7 +65,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders NumberLearn game', () => {
@@ -58,7 +74,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders ABCLearn game', () => {
@@ -67,7 +83,7 @@ describe('App Routing', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText('回首頁')).toBeInTheDocument()
+    expect(screen.getByText('選擇挑戰級別')).toBeInTheDocument()
   })
 
   it('renders History page', () => {

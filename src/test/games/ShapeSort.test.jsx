@@ -19,21 +19,34 @@ vi.mock('../../hooks/useSound', () => ({
   }),
 }))
 
-vi.mock('../../hooks/useProgress', () => ({
-  useProgress: () => ({
-    progress: { totalStars: 0, gamesPlayed: 0, history: [], achievements: [], lastPlayed: null },
+vi.mock('../../contexts/ProfileContext', () => ({
+  useProfile: () => ({
+    activeProfile: { id: '1', name: '小明', age: 5, avatar: '🐶', totalStars: 0, gamesPlayed: 0, achievements: [], history: [], unlockedGames: [], levelProgress: {} },
+    profiles: [],
+    switchProfile: vi.fn(),
     recordGame: vi.fn(),
-    resetProgress: vi.fn(),
-    getGameStats: vi.fn(() => ({ totalPlayed: 0, bestStars: 0, avgStars: 0 })),
   }),
+  DIFFICULTY_LEVELS: {
+    beginner: { label: '初級', color: '#4CAF50', emoji: '🌱', description: '最適合初學者' },
+    intermediate: { label: '中級', color: '#2196F3', emoji: '🌺', description: '有一點基礎' },
+    advanced: { label: '高級', color: '#FF9800', emoji: '⭐', description: '経驗豐富' },
+    expert: { label: '專家', color: '#9C27B0', emoji: '🔥', description: '十分熟練' },
+    master: { label: '大師', color: '#F44336', emoji: '👑', description: '終極挑戰' },
+  },
+  LEVEL_ORDER: ['beginner', 'intermediate', 'advanced', 'expert', 'master'],
+  getNextLevel: () => 'intermediate',
+  ACHIEVEMENTS: {},
 }))
 
 function renderGame() {
-  return render(
+  const result = render(
     <MemoryRouter>
       <ShapeSort />
     </MemoryRouter>
   )
+  // Games now show LevelSelect first; click '初級' to enter the game
+  fireEvent.click(screen.getAllByText('初級')[0])
+  return result
 }
 
 describe('ShapeSort', () => {
@@ -66,24 +79,26 @@ describe('ShapeSort', () => {
     expect(screen.getByText('🎯 放到正確位置')).toBeInTheDocument()
   })
 
-  it('renders progress bar at 0/6', () => {
+  it('renders progress bar at 0/3', () => {
     renderGame()
-    expect(screen.getByText('0/6')).toBeInTheDocument()
+    expect(screen.getByText('0/3')).toBeInTheDocument()
   })
 
-  it('renders 6 shape buttons and 6 target buttons', () => {
+  it('renders 3 shape buttons and 3 target buttons', () => {
     renderGame()
     const shapeBtns = screen.getAllByRole('button').filter(btn => btn.classList.contains('shape-btn'))
     const targetBtns = screen.getAllByRole('button').filter(btn => btn.classList.contains('target-btn'))
-    expect(shapeBtns).toHaveLength(6)
-    expect(targetBtns).toHaveLength(6)
+    expect(shapeBtns).toHaveLength(3)
+    expect(targetBtns).toHaveLength(3)
   })
 
   it('renders shape names', () => {
     renderGame()
-    const shapeNames = ['圓形', '正方形', '三角形', '星形', '愛心', '菱形']
-    shapeNames.forEach(name => {
-      expect(screen.getByText(name)).toBeInTheDocument()
+    // Beginner mode has 3 randomly selected shapes, so check that 3 name labels are rendered
+    const nameEls = document.querySelectorAll('.shape-btn__name')
+    expect(nameEls).toHaveLength(3)
+    nameEls.forEach(el => {
+      expect(el.textContent.length).toBeGreaterThan(0)
     })
   })
 
@@ -117,7 +132,7 @@ describe('ShapeSort', () => {
 
     await act(async () => { vi.advanceTimersByTime(600) })
     // At least one match should succeed, progress should advance
-    expect(screen.getByText('1/6')).toBeInTheDocument()
+    expect(screen.getByText('1/3')).toBeInTheDocument()
     vi.useRealTimers()
   })
 
@@ -126,7 +141,7 @@ describe('ShapeSort', () => {
     renderGame()
 
     // Strategy: for each shape, click it, then click all targets until matched
-    for (let round = 0; round < 6; round++) {
+    for (let round = 0; round < 3; round++) {
       const shapeBtns = screen.getAllByRole('button').filter(
         btn => btn.classList.contains('shape-btn') && !btn.classList.contains('matched') && !btn.disabled
       )
