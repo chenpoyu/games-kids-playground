@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="50%" style="stop-color:#764ba2"/>
+      <stop offset="100%" style="stop-color:#f093fb"/>
+    </linearGradient>
+    <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="20%" style="stop-color:#ffa502"/>
+      <stop offset="40%" style="stop-color:#ffd93d"/>
+      <stop offset="60%" style="stop-color:#6bcb77"/>
+      <stop offset="80%" style="stop-color:#4d96ff"/>
+      <stop offset="100%" style="stop-color:#9b59b6"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="80" r="60" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="1100" cy="100" r="80" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="200" cy="550" r="100" fill="rgba(255,255,255,0.06)"/>
+  <circle cx="1050" cy="500" r="70" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="600" cy="50" r="40" fill="rgba(255,255,255,0.12)"/>
+
+  <!-- Stars decoration -->
+  <text x="80" y="200" font-size="40" opacity="0.6">⭐</text>
+  <text x="1080" y="250" font-size="35" opacity="0.5">✨</text>
+  <text x="150" y="450" font-size="30" opacity="0.4">🌟</text>
+  <text x="1020" y="430" font-size="45" opacity="0.5">⭐</text>
+  <text x="950" y="150" font-size="25" opacity="0.4">✨</text>
+  <text x="300" y="120" font-size="30" opacity="0.3">🌟</text>
+
+  <!-- Main card background -->
+  <rect x="120" y="100" width="960" height="430" rx="30" ry="30" fill="rgba(255,255,255,0.95)" filter="url(#shadow)"/>
+
+  <!-- Rainbow bar -->
+  <rect x="120" y="100" width="960" height="12" rx="6" ry="6" fill="url(#rainbow)"/>
+
+  <!-- Game icons row -->
+  <text x="240" y="195" font-size="50" text-anchor="middle">🎨</text>
+  <text x="400" y="195" font-size="50" text-anchor="middle">🧩</text>
+  <text x="560" y="195" font-size="50" text-anchor="middle">🎈</text>
+  <text x="720" y="195" font-size="50" text-anchor="middle">🔢</text>
+  <text x="880" y="195" font-size="50" text-anchor="middle">🔤</text>
+  <text x="960" y="195" font-size="50" text-anchor="middle">ㄅ</text>
+
+  <!-- Main title with emoji -->
+  <text x="600" y="310" font-family="'Noto Sans TC', sans-serif" font-size="72" font-weight="900" fill="#2d3436" text-anchor="middle">🌈 歡樂小遊戲樂園</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="375" font-family="'Noto Sans TC', sans-serif" font-size="30" font-weight="400" fill="#636e72" text-anchor="middle">專為 3-6 歲兒童設計的互動學習遊戲平台</text>
+
+  <!-- Feature tags -->
+  <rect x="210" y="410" width="140" height="42" rx="21" fill="#ff6b6b" opacity="0.9"/>
+  <text x="280" y="438" font-family="'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">顏色配對</text>
+
+  <rect x="370" y="410" width="140" height="42" rx="21" fill="#ffa502" opacity="0.9"/>
+  <text x="440" y="438" font-family="'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">動物拼圖</text>
+
+  <rect x="530" y="410" width="140" height="42" rx="21" fill="#6bcb77" opacity="0.9"/>
+  <text x="600" y="438" font-family="'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">數字學習</text>
+
+  <rect x="690" y="410" width="140" height="42" rx="21" fill="#4d96ff" opacity="0.9"/>
+  <text x="760" y="438" font-family="'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">ABC 英文</text>
+
+  <rect x="850" y="410" width="140" height="42" rx="21" fill="#9b59b6" opacity="0.9"/>
+  <text x="920" y="438" font-family="'Noto Sans TC', sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">注音學習</text>
+
+  <!-- Bottom tagline -->
+  <text x="600" y="500" font-family="'Noto Sans TC', sans-serif" font-size="22" font-weight="700" fill="#a29bfe" text-anchor="middle">🎮 寓教於樂・快樂學習・安全無廣告</text>
+</svg>
