@@ -1,0 +1,238 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.number-learn {
+  @include game-container;
+  background: linear-gradient(180deg, #EDE7F6 0%, #D1C4E9 30%, #F3E5F5 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-md;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #6A1B9A;
+  }
+
+  &__subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+    margin-bottom: $spacing-sm;
+    font-weight: 700;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: $shadow-sm;
+  }
+
+  // === Count Game ===
+  &__count-game {
+    @include flex-column-center;
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 16px;
+  }
+
+  &__question {
+    @include flex-column-center;
+    gap: $spacing-md;
+  }
+
+  &__question-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #4A148C;
+    text-align: center;
+
+    @include mobile {
+      font-size: 1.2rem;
+    }
+  }
+
+  &__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 320px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  &__item {
+    font-size: 2.2rem;
+    animation: popIn 0.3s ease backwards;
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.08}s;
+      }
+    }
+
+    @include mobile {
+      font-size: 1.8rem;
+    }
+  }
+
+  &__choices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  &__choice {
+    @include btn-base;
+    @include flex-center;
+    padding: 20px;
+    background: white;
+    border-radius: $radius-lg;
+    border: 3px solid #CE93D8;
+    box-shadow: $shadow-md;
+    transition: all $transition-bounce;
+
+    &:hover {
+      transform: translateY(-3px) scale(1.05);
+      border-color: #AB47BC;
+      box-shadow: $shadow-lg;
+    }
+
+    &.correct {
+      background: #C8E6C9;
+      border-color: #4CAF50;
+      animation: pulse 0.5s ease;
+    }
+
+    &.wrong {
+      background: #FFCDD2;
+      border-color: #EF5350;
+      animation: shake 0.4s ease;
+    }
+
+    &.show-correct {
+      border-color: #4CAF50;
+      box-shadow: 0 0 15px rgba(#4CAF50, 0.4);
+    }
+  }
+
+  &__choice-number {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #6A1B9A;
+
+    @include mobile {
+      font-size: 1.6rem;
+    }
+  }
+
+  // === Order Game ===
+  &__order-game {
+    @include flex-column-center;
+    gap: $spacing-lg;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 16px;
+  }
+
+  &__order-done {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: $radius-lg;
+    min-height: 60px;
+    min-width: 200px;
+    box-shadow: $shadow-sm;
+  }
+
+  &__order-num {
+    @include flex-center;
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-round;
+    font-weight: 900;
+    font-size: 1.3rem;
+
+    &.done {
+      background: linear-gradient(135deg, #7E57C2, #AB47BC);
+      color: white;
+      animation: popIn 0.3s ease;
+      box-shadow: 0 2px 8px rgba(#7E57C2, 0.4);
+    }
+
+    &.next {
+      background: rgba(0, 0, 0, 0.08);
+      color: #999;
+      border: 2px dashed #CE93D8;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @include mobile {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+    }
+  }
+
+  &__order-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 400px;
+  }
+
+  &__order-btn {
+    @include btn-base;
+    @include flex-center;
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-round;
+    background: white;
+    border: 3px solid #CE93D8;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #6A1B9A;
+    box-shadow: $shadow-md;
+
+    &:hover:not(.used) {
+      transform: scale(1.1);
+      border-color: #AB47BC;
+      box-shadow: $shadow-lg;
+    }
+
+    &.used {
+      opacity: 0.3;
+      transform: scale(0.8);
+      pointer-events: none;
+    }
+
+    @include mobile {
+      width: 46px;
+      height: 46px;
+      font-size: 1.2rem;
+    }
+  }
+}

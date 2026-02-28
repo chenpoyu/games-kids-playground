@@ -1,0 +1,242 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.history {
+  @include game-container;
+  background: linear-gradient(180deg, #FFF8E1 0%, #FFECB3 30%, #FFF3E0 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-lg;
+  padding-bottom: 100px;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #E65100;
+  }
+
+  &__subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+  }
+
+  // === Overview Stats ===
+  &__overview {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 16px;
+  }
+
+  &__stat-card {
+    @include flex-column-center;
+    background: white;
+    border-radius: $radius-lg;
+    padding: 20px 28px;
+    box-shadow: $shadow-md;
+    min-width: 100px;
+    gap: 4px;
+    animation: popIn 0.4s ease backwards;
+
+    @include mobile {
+      padding: 14px 18px;
+      min-width: 80px;
+    }
+
+    @for $i from 1 through 3 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+  }
+
+  &__stat-icon {
+    font-size: 2rem;
+
+    @include mobile {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #E65100;
+
+    @include mobile {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__stat-label {
+    font-size: 0.85rem;
+    color: $text-light;
+    font-weight: 700;
+  }
+
+  // === Section ===
+  &__section {
+    width: 100%;
+    max-width: 600px;
+    padding: 0 16px;
+  }
+
+  &__section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+    text-align: center;
+  }
+
+  // === Achievements ===
+  &__achievements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__achievement {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: $radius-md;
+    background: white;
+    box-shadow: $shadow-sm;
+    transition: all 0.3s ease;
+
+    &.unlocked {
+      border: 2px solid #FFD54F;
+      background: linear-gradient(145deg, #FFF8E1, #FFFFFF);
+    }
+
+    &.locked {
+      opacity: 0.5;
+      border: 2px solid #E0E0E0;
+    }
+  }
+
+  &__achievement-emoji {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  &__achievement-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__achievement-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: $text-dark;
+  }
+
+  &__achievement-desc {
+    font-size: 0.8rem;
+    color: $text-light;
+  }
+
+  // === History List ===
+  &__empty {
+    text-align: center;
+    padding: 32px;
+    color: $text-light;
+    font-size: 1.1rem;
+  }
+
+  &__play-btn {
+    @include btn-primary($color-primary);
+    margin-top: $spacing-md;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+    gap: 12px;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+  }
+
+  &__entry-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__entry-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: $text-dark;
+  }
+
+  &__entry-date {
+    font-size: 0.8rem;
+    color: $text-light;
+  }
+
+  &__entry-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__entry-stars {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+
+  &__entry-details {
+    font-size: 0.8rem;
+    color: $text-light;
+    background: #F5F5F5;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  // === Actions ===
+  &__actions {
+    padding: 0 16px;
+  }
+
+  &__reset-btn {
+    @include btn-base;
+    padding: 10px 20px;
+    background: #FFCDD2;
+    color: #C62828;
+    border-radius: $radius-lg;
+    font-size: 0.9rem;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+      background: #EF9A9A;
+      transform: translateY(-2px);
+    }
+  }
+}

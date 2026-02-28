@@ -1,0 +1,68 @@
+// 🎨 兒童遊戲樂園 - 全局變數
+// 使用明亮、飽和的色彩，適合兒童視覺
+
+// === 主色調 ===
+$color-primary: #FF6B6B;      // 珊瑚紅
+$color-secondary: #4ECDC4;    // 薄荷綠
+$color-accent: #FFE66D;       // 陽光黃
+$color-purple: #A78BFA;       // 薰衣草紫
+$color-blue: #60A5FA;         // 天空藍
+$color-pink: #F472B6;         // 櫻花粉
+$color-orange: #FB923C;       // 活力橙
+$color-green: #34D399;        // 草地綠
+
+// === 背景色 ===
+$bg-light: #FFF8F0;
+$bg-cream: #FEFCE8;
+$bg-gradient-sky: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 50%, #FFF8E1 100%);
+$bg-gradient-sunset: linear-gradient(135deg, #FFB347 0%, #FF6B6B 50%, #A78BFA 100%);
+$bg-gradient-ocean: linear-gradient(180deg, #60A5FA 0%, #4ECDC4 50%, #34D399 100%);
+$bg-gradient-candy: linear-gradient(135deg, #F472B6 0%, #A78BFA 50%, #60A5FA 100%);
+
+// === 文字色 ===
+$text-dark: #2D3436;
+$text-light: #636E72;
+$text-white: #FFFFFF;
+
+// === 字體 ===
+$font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// === 圓角 ===
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 30px;
+$radius-xl: 40px;
+$radius-round: 50%;
+
+// === 陰影 ===
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+$shadow-glow: 0 0 20px rgba(255, 107, 107, 0.3);
+$shadow-card: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+// === 動畫 ===
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+$transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// === 間距 ===
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// === 遊戲卡片顏色組 ===
+$game-colors: (
+  'red': #FF6B6B,
+  'green': #4ECDC4,
+  'blue': #60A5FA,
+  'purple': #A78BFA,
+  'orange': #FB923C,
+  'pink': #F472B6,
+  'yellow': #FFE66D,
+  'cyan': #22D3EE,
+);

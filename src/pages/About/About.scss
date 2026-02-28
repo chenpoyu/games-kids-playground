@@ -1,0 +1,286 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.about {
+  @include game-container;
+  background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 30%, #FFF8E1 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-xl;
+  padding-bottom: 80px;
+
+  // === Hero ===
+  &__hero {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+    padding: 0 16px;
+  }
+
+  &__hero-emoji {
+    font-size: 4rem;
+    animation: float 3s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+
+  &__hero-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #FF6B6B, #A78BFA, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+
+    @include mobile {
+      font-size: 1.8rem;
+    }
+  }
+
+  &__hero-subtitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2E7D32;
+    margin-bottom: 8px;
+
+    @include mobile {
+      font-size: 1rem;
+    }
+  }
+
+  &__hero-desc {
+    color: $text-light;
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+
+    @include mobile {
+      font-size: 0.9rem;
+    }
+  }
+
+  // === Section ===
+  &__section {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 16px;
+  }
+
+  &__section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-dark;
+    text-align: center;
+    margin-bottom: $spacing-lg;
+
+    @include mobile {
+      font-size: 1.3rem;
+    }
+  }
+
+  // === Features ===
+  &__features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+
+    @include mobile {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+
+  &__feature-card {
+    @include flex-column-center;
+    @include card(16px);
+    gap: 6px;
+    text-align: center;
+    animation: slideUp 0.4s ease backwards;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: #A5D6A7;
+      box-shadow: $shadow-lg;
+    }
+
+    @for $i from 1 through 6 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.08}s;
+      }
+    }
+  }
+
+  &__feature-emoji {
+    font-size: 2rem;
+  }
+
+  &__feature-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__feature-desc {
+    font-size: 0.8rem;
+    color: $text-light;
+    line-height: 1.4;
+  }
+
+  // === Games List ===
+  &__games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__game-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+    animation: slideUp 0.4s ease backwards;
+
+    @for $i from 1 through 6 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.06}s;
+      }
+    }
+  }
+
+  &__game-emoji {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+
+    @include mobile {
+      font-size: 1.8rem;
+    }
+  }
+
+  &__game-info {
+    flex: 1;
+  }
+
+  &__game-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  &__game-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: $text-dark;
+  }
+
+  &__game-age {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  &__game-desc {
+    font-size: 0.85rem;
+    color: $text-light;
+    line-height: 1.4;
+  }
+
+  // === Guide ===
+  &__guide {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__guide-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: white;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+
+    p {
+      font-size: 1rem;
+      color: $text-dark;
+      font-weight: 500;
+    }
+  }
+
+  &__guide-num {
+    @include flex-center;
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-round;
+    background: linear-gradient(135deg, #4ECDC4, #2DB5A8);
+    color: white;
+    font-weight: 900;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  // === Parent Info ===
+  &__parent-info {
+    background: white;
+    border-radius: $radius-lg;
+    padding: 20px 24px;
+    box-shadow: $shadow-sm;
+
+    p {
+      padding: 8px 0;
+      font-size: 0.95rem;
+      color: $text-dark;
+      border-bottom: 1px solid #F5F5F5;
+      line-height: 1.5;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  // === CTA ===
+  &__cta {
+    text-align: center;
+  }
+
+  &__cta-btn {
+    @include btn-primary($color-secondary);
+    font-size: 1.3rem;
+    padding: 16px 40px;
+
+    @include mobile {
+      font-size: 1.1rem;
+      padding: 14px 32px;
+    }
+  }
+
+  // === Footer ===
+  &__footer {
+    text-align: center;
+    color: $text-light;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  &__footer-tech {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+
+  &__footer-dev {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+}

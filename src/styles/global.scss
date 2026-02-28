@@ -1,0 +1,67 @@
+// 🌐 全局樣式
+@use 'variables' as *;
+@use 'animations';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+body {
+  font-family: $font-family;
+  color: $text-dark;
+  background: $bg-light;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // 防止兒童意外拖動
+  user-select: none;
+  -webkit-user-select: none;
+  // 防止雙擊縮放
+  touch-action: manipulation;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: $font-family;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  -webkit-user-drag: none;
+}
+
+// 滾動條美化
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-secondary;
+  border-radius: 10px;
+}
+
+// 選取效果
+::selection {
+  background: rgba($color-accent, 0.4);
+}

@@ -1,0 +1,133 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.win-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  @include flex-center;
+  animation: fadeIn 0.3s ease;
+}
+
+.win-modal {
+  @include card($spacing-2xl);
+  @include flex-column-center;
+  border-radius: $radius-xl;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background: linear-gradient(145deg, #FFFFFF, #FFF8F0);
+  border: 3px solid $color-accent;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+  
+  &__trophy {
+    font-size: 4rem;
+    animation: float 2s ease-in-out infinite;
+    margin-bottom: $spacing-md;
+
+    @include mobile {
+      font-size: 3rem;
+    }
+  }
+  
+  &__title {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, $color-primary, $color-purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-md;
+
+    @include mobile {
+      font-size: 1.5rem;
+    }
+  }
+  
+  &__stars {
+    @include star-rating;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__star {
+    font-size: 2.5rem;
+    transition: all $transition-bounce;
+
+    @include mobile {
+      font-size: 2rem;
+    }
+    
+    &.active {
+      animation: popIn 0.5s ease backwards;
+      
+      &:nth-child(1) { animation-delay: 0.3s; }
+      &:nth-child(2) { animation-delay: 0.5s; }
+      &:nth-child(3) { animation-delay: 0.7s; }
+    }
+  }
+  
+  &__message {
+    font-size: 1.2rem;
+    color: $text-light;
+    margin-bottom: $spacing-xl;
+
+    @include mobile {
+      font-size: 1rem;
+      margin-bottom: $spacing-lg;
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    @include mobile {
+      width: 100%;
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+  }
+  
+  &__btn {
+    @include btn-base;
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    border-radius: $radius-xl;
+
+    @include mobile {
+      padding: 12px 20px;
+      font-size: 1rem;
+      width: 100%;
+    }
+    
+    &--replay {
+      background: $color-primary;
+      color: $text-white;
+      box-shadow: 0 4px 15px rgba($color-primary, 0.4);
+      
+      &:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba($color-primary, 0.5);
+      }
+    }
+    
+    &--home {
+      background: $color-secondary;
+      color: $text-white;
+      box-shadow: 0 4px 15px rgba($color-secondary, 0.4);
+      
+      &:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 6px 20px rgba($color-secondary, 0.5);
+      }
+    }
+  }
+}

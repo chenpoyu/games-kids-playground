@@ -1,0 +1,217 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.shape-sort {
+  @include game-container;
+  background: linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 30%, #FFF8E1 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-lg;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #E65100;
+  }
+
+  &__subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+    margin-bottom: $spacing-md;
+    min-height: 1.5em;
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+
+    span {
+      font-weight: 700;
+      color: #E65100;
+    }
+  }
+
+  &__progress-bar {
+    width: 200px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FB923C, #F97316);
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  &__section {
+    width: 100%;
+    max-width: 500px;
+    padding: 0 16px;
+  }
+
+  &__section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: $spacing-sm;
+    color: $text-dark;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    @include mobile {
+      gap: 8px;
+    }
+  }
+}
+
+.shape-svg {
+  width: 100%;
+  height: 100%;
+}
+
+// 彩色形狀按鈕
+.shape-btn {
+  @include btn-base;
+  @include flex-column-center;
+  @include card(12px);
+  gap: 6px;
+  aspect-ratio: 1;
+  border: 3px solid transparent;
+  transition: all $transition-bounce;
+  animation: popIn 0.4s ease backwards;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.08}s;
+    }
+  }
+
+  &__icon {
+    width: 55px;
+    height: 55px;
+    transition: all 0.3s ease;
+
+    svg {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    }
+
+    @include mobile {
+      width: 42px;
+      height: 42px;
+    }
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $text-dark;
+
+    @include mobile {
+      font-size: 0.7rem;
+    }
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+    border-color: var(--shape-color);
+  }
+
+  &.selected {
+    border-color: var(--shape-color);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    transform: scale(1.08);
+
+    .shape-btn__icon {
+      animation: float 1s ease-in-out infinite;
+    }
+  }
+
+  &.matched {
+    opacity: 0.4;
+    transform: scale(0.9);
+    pointer-events: none;
+  }
+}
+
+// 目標輪廓按鈕
+.target-btn {
+  @include btn-base;
+  @include flex-center;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $radius-md;
+  border: 3px dashed #B0BEC5;
+  transition: all $transition-bounce;
+  animation: popIn 0.4s ease backwards;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.5 + $i * 0.08}s;
+    }
+  }
+
+  &__icon {
+    width: 50px;
+    height: 50px;
+    transition: all 0.3s ease;
+
+    svg {
+      stroke-width: 3;
+      stroke: #B0BEC5;
+      fill: none;
+    }
+
+    &.filled svg {
+      fill: var(--shape-color, currentColor);
+      stroke: var(--shape-color, currentColor);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    }
+
+    @include mobile {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  &.ready {
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.08);
+      border-color: #78909C;
+      background: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  &.matched {
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid var(--shape-color);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    animation: pulse 0.5s ease;
+
+    .target-btn__icon {
+      animation: bounceIn 0.5s ease;
+    }
+  }
+
+  &.wrong {
+    animation: shake 0.4s ease;
+    border-color: $color-primary;
+    background: rgba($color-primary, 0.1);
+  }
+}

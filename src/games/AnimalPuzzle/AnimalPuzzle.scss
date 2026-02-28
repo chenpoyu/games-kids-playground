@@ -1,0 +1,176 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.animal-puzzle {
+  @include game-container;
+  background: linear-gradient(180deg, #E0F7FA 0%, #B2EBF2 30%, #E8F5E9 100%);
+  @include flex-column-center;
+  padding-top: 60px;
+  gap: $spacing-md;
+
+  &__header {
+    text-align: center;
+    animation: slideDown 0.5s ease;
+  }
+
+  &__title {
+    @include game-title;
+    color: #00897B;
+  }
+
+  &__subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: $shadow-sm;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    max-width: 480px;
+    width: 100%;
+    padding: 0 16px;
+
+    @include mobile {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 340px;
+    }
+  }
+
+  &__tip {
+    text-align: center;
+    color: $text-light;
+    font-size: 0.95rem;
+    margin-top: $spacing-sm;
+    padding: 0 16px;
+
+    @include mobile {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// 動物翻翻卡
+.animal-card {
+  @include btn-base;
+  aspect-ratio: 1;
+  perspective: 600px;
+  background: none;
+  padding: 0;
+  border-radius: $radius-md;
+  animation: popIn 0.4s ease backwards;
+
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+
+  &__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform-style: preserve-3d;
+    border-radius: $radius-md;
+  }
+
+  &.flipped &__inner {
+    transform: rotateY(180deg);
+  }
+
+  &__front,
+  &__back {
+    position: absolute;
+    inset: 0;
+    border-radius: $radius-md;
+    @include flex-column-center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  &__front {
+    background: linear-gradient(145deg, #4ECDC4, #2DB5A8);
+    box-shadow: $shadow-md, inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    border: 3px solid #3CC0B3;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $color-accent;
+      box-shadow: $shadow-lg, 0 0 15px rgba($color-secondary, 0.3);
+    }
+  }
+
+  &__question {
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+
+    @include mobile {
+      font-size: 1.6rem;
+    }
+  }
+
+  &__back {
+    transform: rotateY(180deg);
+    background: linear-gradient(145deg, #FFFFFF, #F0FFF0);
+    border: 3px solid #A5D6A7;
+    box-shadow: $shadow-md;
+  }
+
+  &__emoji {
+    font-size: 2.5rem;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+
+    @include mobile {
+      font-size: 2rem;
+    }
+  }
+
+  &__name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text-dark;
+
+    @include mobile {
+      font-size: 0.65rem;
+    }
+  }
+
+  &.matched {
+    .animal-card__inner {
+      transform: rotateY(180deg);
+    }
+
+    .animal-card__back {
+      border-color: $color-green;
+      box-shadow: 0 0 20px rgba($color-green, 0.3);
+    }
+  }
+
+  &.just-matched {
+    .animal-card__back {
+      animation: pulse 0.6s ease;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+      border-color: gold;
+    }
+  }
+}

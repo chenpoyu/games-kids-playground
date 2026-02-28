@@ -1,0 +1,136 @@
+// 🎯 共用 Mixins
+@use 'variables' as *;
+
+// === 彈性布局 ===
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+// === 按鈕基礎 ===
+@mixin btn-base {
+  border: none;
+  cursor: pointer;
+  font-family: $font-family;
+  font-weight: 700;
+  border-radius: $radius-lg;
+  transition: all $transition-bounce;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+@mixin btn-primary($bg: $color-primary, $color: $text-white) {
+  @include btn-base;
+  background: $bg;
+  color: $color;
+  padding: 14px 32px;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba($bg, 0.4);
+  
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba($bg, 0.5);
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+}
+
+// === 卡片 ===
+@mixin card($padding: $spacing-lg) {
+  background: white;
+  border-radius: $radius-md;
+  padding: $padding;
+  box-shadow: $shadow-card;
+  transition: all $transition-normal;
+}
+
+@mixin card-hover {
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+// === 動畫 Keyframes ===
+@mixin bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@mixin float-animation($duration: 3s) {
+  animation: float $duration ease-in-out infinite;
+}
+
+@mixin wiggle-animation {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+@mixin sparkle-animation {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+// === 遊戲格子佈局 ===
+@mixin game-grid($cols: 4, $gap: $spacing-md) {
+  display: grid;
+  grid-template-columns: repeat($cols, 1fr);
+  gap: $gap;
+}
+
+// === 響應式 ===
+@mixin mobile {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 769px) and (max-width: 1024px) {
+    @content;
+  }
+}
+
+// === 全螢幕遊戲畫面 ===
+@mixin game-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  padding: $spacing-lg;
+  box-sizing: border-box;
+  font-family: $font-family;
+  position: relative;
+  overflow: hidden;
+}
+
+// === 遊戲標題 ===
+@mixin game-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  
+  @include mobile {
+    font-size: 1.6rem;
+  }
+}
+
+// === 星星評分 ===
+@mixin star-rating {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  font-size: 2rem;
+}

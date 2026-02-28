@@ -1,0 +1,178 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSound } from '../../hooks/useSound'
+import { useProgress } from '../../hooks/useProgress'
+import BackButton from '../../components/BackButton/BackButton'
+import WinModal from '../../components/WinModal/WinModal'
+import './AnimalPuzzle.scss'
+
+const ALL_ANIMALS = [
+  { id: 'cat', emoji: '🐱', name: '小貓' },
+  { id: 'dog', emoji: '🐶', name: '小狗' },
+  { id: 'rabbit', emoji: '🐰', name: '兔子' },
+  { id: 'bear', emoji: '🐻', name: '小熊' },
+  { id: 'lion', emoji: '🦁', name: '獅子' },
+  { id: 'elephant', emoji: '🐘', name: '大象' },
+  { id: 'panda', emoji: '🐼', name: '熊貓' },
+  { id: 'monkey', emoji: '🐵', name: '猴子' },
+  { id: 'pig', emoji: '🐷', name: '小豬' },
+  { id: 'frog', emoji: '🐸', name: '青蛙' },
+  { id: 'duck', emoji: '🦆', name: '鴨子' },
+  { id: 'penguin', emoji: '🐧', name: '企鵝' },
+]
+
+function shuffleArray(arr) {
+  const shuffled = [...arr]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+function generateCards(pairCount = 6) {
+  const selected = shuffleArray(ALL_ANIMALS).slice(0, pairCount)
+  const pairs = [...selected, ...selected].map((item, index) => ({
+    ...item,
+    cardId: index,
+    matched: false,
+  }))
+  return shuffleArray(pairs)
+}
+
+export default function AnimalPuzzle() {
+  const navigate = useNavigate()
+  const { playCorrect, playWrong, playClick, playWin } = useSound()
+  const { recordGame } = useProgress()
+  const [cards, setCards] = useState(() => generateCards(6))
+  const [flipped, setFlipped] = useState([])
+  const [matches, setMatches] = useState(0)
+  const [attempts, setAttempts] = useState(0)
+  const [showWin, setShowWin] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+  const [lastMatched, setLastMatched] = useState(null)
+
+  const totalPairs = 6
+
+  const handleCardClick = useCallback((cardId) => {
+    if (disabled) return
+    const card = cards.find(c => c.cardId === cardId)
+    if (!card || card.matched || flipped.includes(cardId)) return
+
+    playClick()
+    const newFlipped = [...flipped, cardId]
+    setFlipped(newFlipped)
+
+    if (newFlipped.length === 2) {
+      setDisabled(true)
+      setAttempts(a => a + 1)
+      const [first, second] = newFlipped
+      const card1 = cards.find(c => c.cardId === first)
+      const card2 = cards.find(c => c.cardId === second)
+
+      if (card1.id === card2.id) {
+        setTimeout(() => {
+          playCorrect()
+          setLastMatched(card1.id)
+          setCards(prev => prev.map(c =>
+            c.id === card1.id ? { ...c, matched: true } : c
+          ))
+          setMatches(m => m + 1)
+          setFlipped([])
+          setDisabled(false)
+          setTimeout(() => setLastMatched(null), 800)
+        }, 600)
+      } else {
+        setTimeout(() => {
+          playWrong()
+          setFlipped([])
+          setDisabled(false)
+        }, 1000)
+      }
+    }
+  }, [cards, flipped, disabled, playClick, playCorrect, playWrong])
+
+  useEffect(() => {
+    if (matches === totalPairs) {
+      setTimeout(() => {
+        playWin()
+        const stars = attempts <= totalPairs + 3 ? 3 : attempts <= totalPairs + 7 ? 2 : 1
+        recordGame('animal-puzzle', '動物翻翻樂', stars, `翻了 ${attempts} 次`)
+        setShowWin(true)
+      }, 600)
+    }
+  }, [matches, playWin, attempts, recordGame])
+
+  const resetGame = () => {
+    setCards(generateCards(6))
+    setFlipped([])
+    setMatches(0)
+    setAttempts(0)
+    setShowWin(false)
+    setDisabled(false)
+    setLastMatched(null)
+  }
+
+  const getStars = () => {
+    if (attempts <= totalPairs + 3) return 3
+    if (attempts <= totalPairs + 7) return 2
+    return 1
+  }
+
+  return (
+    <div className="animal-puzzle">
+      <BackButton />
+
+      <div className="animal-puzzle__header">
+        <h1 className="animal-puzzle__title">🦁 動物記憶翻翻樂</h1>
+        <p className="animal-puzzle__subtitle">
+          翻開卡片，找出兩隻一樣的動物！
+        </p>
+        <div className="animal-puzzle__stats">
+          <span className="animal-puzzle__stat">
+            🐾 找到 {matches}/{totalPairs} 對
+          </span>
+          <span className="animal-puzzle__stat">
+            👆 翻了 {attempts} 次
+          </span>
+        </div>
+      </div>
+
+      <div className="animal-puzzle__grid">
+        {cards.map((card) => {
+          const isFlipped = flipped.includes(card.cardId) || card.matched
+          return (
+            <button
+              key={card.cardId}
+              className={`animal-card ${isFlipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''} ${lastMatched === card.id ? 'just-matched' : ''}`}
+              onClick={() => handleCardClick(card.cardId)}
+              disabled={card.matched}
+            >
+              <div className="animal-card__inner">
+                <div className="animal-card__front">
+                  <span className="animal-card__question">🌿</span>
+                </div>
+                <div className="animal-card__back">
+                  <span className="animal-card__emoji">{card.emoji}</span>
+                  <span className="animal-card__name">{card.name}</span>
+                </div>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="animal-puzzle__tip">
+        💡 記住每張卡片的位置，就能更快找到一樣的動物喔！
+      </div>
+
+      <WinModal
+        show={showWin}
+        stars={getStars()}
+        message={`你翻了 ${attempts} 次就找到所有動物了！`}
+        onReplay={resetGame}
+        onHome={() => navigate('/')}
+      />
+    </div>
+  )
+}
